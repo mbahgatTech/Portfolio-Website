@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="800" viewBox="0 0 1280 800">
+  <defs>
+    <rect id="rect-1" width="771" height="430.372" x="254.364" y="77.029"/>
+    <mask id="mask-2" x="0" y="0" maskContentUnits="userSpaceOnUse" maskUnits="userSpaceOnUse">
+      <rect width="1280" height="800" x="0" y="0" fill="white"/>
+      <use fill="black" xlink:href="#rect-1"/>
+    </mask>
+  </defs>
+  <g>
+    <use fill="rgb(255,255,255)" xlink:href="#rect-1"/>
+    <use fill-opacity="0" stroke="rgb(200,200,200)" stroke-linecap="butt" stroke-linejoin="round" stroke-width="16" mask="url(#mask-2)" xlink:href="#rect-1"/>
+  </g>
+  <rect width="786" height="55.728" x="246.864" y="509.793" fill="rgb(200,200,200)" rx="0" ry="0"/>
+  <path fill="rgb(200,200,200)" fill-rule="evenodd" d="M254.86379277 540.18991444h770.00004c4.4153202 0 8 3.5846798 8 8v34.66147777c0 4.4153202-3.5846798 8-8 8h-770.00004c-4.4153202 0-8-3.5846798-8-8v-34.66147777c0-4.4153202 3.5846798-8 8-8z"/>
+  <rect width="213.737" height="31.347" x="532.864" y="677.637" fill="rgb(200,200,200)" rx="0" ry="0"/>
+  <path fill="rgb(200,200,200)" fill-rule="evenodd" d="M540.86379277 694.63739285h197.73689895c4.4153202 0 8 3.5846798 8 8v12.49711291c0 4.4153202-3.5846798 8-8 8H540.86379277c-4.4153202 0-8-3.5846798-8-8v-12.4971129c0-4.4153202 3.5846798-8 8-8z"/>
+  <rect width="94.228" height="55.728" x="592.75" y="602.25" fill="rgb(200,200,200)" rx="0" ry="0" transform="rotate(90.000032 639.86381277 630.11403749)"/>
+</svg>
