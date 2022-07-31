@@ -1,0 +1,18 @@
+.profile {
+    border-radius: 100%;
+}
+
+.learn { 
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    bottom: 0;
+    margin-top: 20%;
+}
+
+.learnText { 
+    width: 100%;
+    text-align: center;
+}

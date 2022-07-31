@@ -5,7 +5,7 @@ const navigation = [
 
 const Profile = () => {
   return (
-    <div className="relative bg-slate-800 overflow-hidden">
+    <div className="relative bg-slate-800 overflow-hidden h-screen">
         <div className="max-w-7xl mx-auto">
             <div className="relative lg:h-screen z-10 pb-8 bg-slate-800 sm:pb-16 sm: md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
                 <svg
@@ -31,19 +31,21 @@ const Profile = () => {
                 <div className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
                     <div className="sm:text-center lg:text-left">
                         <h1 className="text-4xl tracking-tight font-extrabold text-blue-100 sm:text-5xl md:text-6xl">
-                            <span className="block xl:inline">Mazen Bahgat</span>{'               '}
+                            <span className="block xl:inline">Mazen Bahgat</span>{' '}<br className="hidden xl:visible"/><br className="hidden lg:visible xl:visible 2xl:visible" />
+                        </h1>
+                        <h1 className="text-4xl tracking-tight font-extrabold text-blue-100 sm:text-5xl md:text-6xl">
                             <span className="block text-purple-600 xl:inline">Full Stack Developer</span>
                         </h1>
                         <p className="mt-3 text-base text-blue-100 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                            What I do
+                            I am a software engineer based in Ontario, Canada. I enjoy building web, mobile and desktop applications.
                         </p>
                     </div>
                 </div>
             </div>
         </div>
-        <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
+        <div className="h-full lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
             <img
-                className="object-cover object-top h-56 w-full sm:h-72 md:h-96 lg:w-full lg:h-full"
+                className="object-cover object-top w-full bottom-0 h-full lg:w-full"
                 src="/images/profile.jpg"
                 alt="Photo of Mazen"
             />
