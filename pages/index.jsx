@@ -7,16 +7,14 @@ import styles from '../styles/Home.module.css';
 
 const Portfolio = () => {
   return (
-    <div className={styles.container}>
+    <div className='bg-slate-800'>
       <Head>
         <title>Mazen Bahgat</title>
         <meta name="Mazen Bahgat's Development Portfolio" content="Software Development Skills and Experiences" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className={styles.main}>
-        <Profile />
-      </div>
+      <Profile />
 
       <h1>Experiences</h1>
       <Experience />
@@ -25,7 +23,7 @@ const Portfolio = () => {
         <Socials />
       </footer>
     </div>
-  )
+  );
 }
 
 export default Portfolio;
