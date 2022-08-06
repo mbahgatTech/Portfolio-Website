@@ -1,9 +1,7 @@
 import Head from 'next/head';
-import Image from 'next/image';
 import Experience from '../components/Experience';
 import Socials from '../components/Socials';
 import Profile from '../components/Profile';
-import styles from '../styles/Home.module.css';
 
 const Portfolio = () => {
   return (
@@ -16,10 +14,9 @@ const Portfolio = () => {
 
       <Profile />
 
-      <h1>Experiences</h1>
       <Experience />
 
-      <footer className={styles.footer}>
+      <footer className='flex px-8 py-8 justify-center border-inherit border-t border-slate-300'>
         <Socials />
       </footer>
     </div>

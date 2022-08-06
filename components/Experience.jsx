@@ -1,64 +1,80 @@
-import Image from 'next/image';
-import styles from '../styles/Experience.module.css';
-
 const Experience = () => {
     return (
-        <>
-            <div className={styles.expContainer}>
-                <h2>Scales Nature Park</h2>
-                <div className={styles.expImage}>
-                    <Image 
-                        src='/images/scalesLogo.webp'
-                        height={150}
-                        width={150}
-                    />
+        <div className='w-5/6 mx-auto'>
+            <h1 className='text-4xl tracking-tight font-bold text-blue-100 w-full text-center mx-auto mt-16'>My Work Experience</h1>
+            <div className='max-w-full my-16 mx-auto bg-white rounded-xl shadow-md overflow-hidden'>
+                <div className='md:flex'>
+                    <div className='md:shrink-0'>
+                        <img className='w-full h-full md:w-48' src='/images/scalesLogo.webp' alt='Scales Logo' />
+                    </div>
+                    <div className='p-8'>
+                        <div className='uppercase tracking-wide text-sm text-purple-600 font-semibold'>Scales Nature Park</div>
+                        <p className='block mt-1 text-lg leading-tight font-medium text-black'>Full Stack Application Developer</p>
+                        <p className='mt-2 text-slate-500'>Led a small team through the whole development lifecycle of full stack mobile and desktop applications used for wildlife conservation purposes. Acquired hands on experience facing different software development challenges including system design, UI/UX design, new developer oboarding to chosen tech stack and source control.</p>
+                    </div>
                 </div>
-            </div>
 
-            <div>
-                <div className={styles.expContent}>
-                    <h2>Full Stack Application Developer</h2>
-                    <ul>
-                        <li>Led a small team of 2 developers through the development of full stack mobile and desktop applications.</li>
-                        <li>Coordinated with management to gather software requirements for building workflow automation tools and applications.</li>
-                    </ul>
+                {/* <h1 className='block mt-1 w-full text-center text-lg leading-tight font-medium text-black'>Tech Stack</h1>
+                <div className='mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8'>     
+                    {[{
+                        
+                    }, {
+                        
+                    }].map(product =>
+                    <div className="group relative">
+                        <div className="w-full min-h-80 bg-gray-200 aspect-w-1 aspect-h-1 rounded-md overflow-hidden group-hover:opacity-75 lg:h-80 lg:aspect-none">
+                            <img
+                                src='/images/scales'
+                                alt='scales'
+                                className="w-full h-full object-center object-cover lg:w-full lg:h-full"
+                            />
+                        </div>
+                        <div className="mt-4 flex justify-between">
+                            <div>
+                                <h3 className="text-sm text-gray-700">
+                                    <a href='#'>
+                                        <span aria-hidden="true" className="absolute inset-0" />
+                                        React Native
+                                    </a>
+                                </h3>
+                            </div>
+                            <p className="text-sm font-medium text-gray-900">dsds</p>
+                        </div>
+                    </div>)}
                 </div>
-                
-                <div className={styles.workPreview}>
-                    <div className={styles.deviceContainer}>
-                        <Image 
-                        src='/images/phone.svg'
-                        width={230}
-                        height={415}
+
+                <div className='w-full flex flex-row items-center justify-center my-2'>
+                    <div className='relative ml-[5%]'>
+                        <img 
+                            src='/images/phone.svg'
+                            alt='Phone Device'
                         />
                     
-                        <div className={styles.phoneContent}>
-                            <Image 
+                        <div className='absolute top-[6%] left-[5%] w-full h-full mx-auto'>
+                            <img 
                                 src='/images/scalesPhoneApp.png'
-                                width={200}
-                                height={370}
+                                alt='Phone App'
                             />
                         </div>
                     </div>
 
-                    <div className={styles.deviceContainer}>
-                        <Image 
+                    <div className='relative ml-[5%]'>
+                        <img 
                             src='/images/desktop.svg'
-                            width={800}
-                            height={500}
+                            alt='Desktop Device'
                         />
                         
-                        <div className={styles.desktopContent}>
-                            <Image 
+                        <div className='absolute top-[9.5%] left-[19.5%]'>
+                            <img 
                                 src='/images/scalesDesktopApp.png'
-                                width={485}
-                                height={270}
+                                alt='Desktop App'
                             />
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
-        </>
+        </div>
+        
     );
 }
 

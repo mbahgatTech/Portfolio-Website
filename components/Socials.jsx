@@ -1,25 +1,20 @@
-import Image from 'next/image';
-import styles from '../styles/Socials.module.css';
-
 const Socials = () => {
     return (
         <>
-            <div className={styles.social}>
+            <div className='mr-4'>
                 <a href='https://github.com/mbahgatTech'>
-                    <Image 
+                    <img 
                         src='/images/github.svg'
-                        height={30}
-                        width={30}
+                        alt='Github Logo'
                     />
                 </a>
             </div>
 
-            <div className={styles.social}>
+            <div className='ml-4'>
                 <a href='https://www.linkedin.com/in/mazen-bahgat/'>
-                    <Image 
+                    <img 
                         src='/images/linkedin.svg'
-                        height={30}
-                        width={30}
+                        alt='Linkedin Logo'
                     />
                 </a>
             </div>
