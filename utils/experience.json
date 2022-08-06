@@ -1,0 +1,35 @@
+[
+    {
+        "company": "Scales Nature Park",
+        "position": "Full Stack Application Developer",
+        "description": "Led a small team through the development lifecycle of full stack mobile and desktop applications used for wildlife conservation purposes. Acquired hands on experience facing different software development challenges including system design, UI/UX design, new developer oboarding to chosen tech stack and source control.",
+        "image": "/images/scalesLogo.webp",
+        "alt": "Scales Logo", 
+        "techStack": [
+            {
+                "name": "MongoDB",
+                "source": "/images/mongo.png",
+                "alt": "MongoDB Logo",
+                "link": "https://www.mongodb.com/"
+            }, 
+            {
+                "name": "Express.js",
+                "source": "/images/express.png",
+                "alt": "Node Logo",
+                "link": "https://expressjs.com/"
+            },
+            {
+                "name": "React Native",
+                "source": "/images/react.png",
+                "alt": "React Logo",
+                "link": "https://reactnative.dev/"
+            }, 
+            {
+                "name": "Node.js",
+                "source": "/images/node.svg",
+                "alt": "Node Logo",
+                "link": "https://nodejs.org/en/"
+            } 
+        ]
+    }
+]
