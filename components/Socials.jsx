@@ -4,7 +4,7 @@ const Socials = () => {
             <div className='mr-4'>
                 <a href='https://github.com/mbahgatTech'>
                     <picture>
-                        <source srcSet='/images/linkedin.svg' type="image/webp" />
+                        <source srcSet='/images/github.svg' type="image/webp" />
                         <img 
                             src='/images/github.svg'
                             alt='Github Logo'
