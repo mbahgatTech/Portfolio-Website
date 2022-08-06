@@ -44,11 +44,14 @@ const Profile = () => {
             </div>
         </div>
         <div className="h-full lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-            <img
-                className="object-cover object-top w-full bottom-0 h-full lg:w-full"
-                src="/images/profile.jpg"
-                alt="Photo of Mazen"
-            />
+            <picture>
+                <source srcSet='/images/profile.jpg' type="image/webp" />
+                <img
+                    className="object-cover object-top w-full bottom-0 h-full lg:w-full"
+                    src="/images/profile.jpg"
+                    alt="Photo of Mazen"
+                />
+            </picture>
         </div>
     </div>
   );
