@@ -5,11 +5,11 @@ const navigation = [
 
 const Profile = () => {
   return (
-    <div className="relative bg-slate-800 overflow-hidden sm:min-h-[600px] lg:min-h-[400px] h-screen">
+    <div className="relative h-screen bg-slate-800 overflow-hidden min-h-[600px] md:min-h-[800px] lg:min-h-[400px]">
         <div className="max-w-7xl mx-auto">
             <div className="relative lg:h-screen z-10 pb-8 bg-slate-800 sm:pb-16 sm: md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
                 <svg
-                    className="hidden lg:block absolute right-0 inset-y-0 sm:min-h-[600px] lg:min-h-[400px] h-full w-48 text-slate-800 transform translate-x-1/2"
+                    className="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-slate-800 transform translate-x-1/2 min-h-[600px] md:min-h-[800px] lg:min-h-[400px]"
                     fill="currentColor"
                     viewBox="0 0 100 100"
                     preserveAspectRatio="none"
