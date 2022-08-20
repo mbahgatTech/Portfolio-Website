@@ -3,10 +3,14 @@ import Experience from '../components/Experience';
 import Socials from '../components/Socials';
 import Profile from '../components/Profile';
 import Contact from '../components/Contact';
+import Modal from '../components/ConfirmModal';
+import { useState } from 'react';
 
 const Portfolio = () => {
+  const [modal, setModal] = useState(false);
+
   return (
-    <div className='bg-slate-800'>
+    <div className='bg-slate-800 overflow-x-hidden'>
       <Head>
         <title>Mazen Bahgat</title>
         <meta name="Mazen Bahgat's Development Portfolio" content='Software Development Skills and Experiences' />
@@ -19,11 +23,13 @@ const Portfolio = () => {
         <Experience />
       </section>
       
-      <Contact />
+      <Contact setModal={setModal} />
+      <Modal visible={modal} setModal={setModal} />
 
       <footer className='flex px-8 py-8 justify-center border-inherit border-t border-slate-300'>
         <Socials />
       </footer>
+      
     </div>
   );
 }
