@@ -1,4 +1,4 @@
-const experiences = require('../utils/experience.json');
+const experiences = require('../utils/json/experience.json');
 
 const Experience = () => {
     return (
