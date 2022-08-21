@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const MessageSubmit = async (data) => {    
+    return false;
     try {
         await axios({
             method: 'post',
@@ -8,8 +9,10 @@ const MessageSubmit = async (data) => {
             data
         });
     } catch(err) {
-        alert(err.response.data || err.message);
+        return false;
     }
+
+    return true;
 }
 
 export { MessageSubmit };

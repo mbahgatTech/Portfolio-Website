@@ -21,7 +21,7 @@ const SendEmail = (req, res) => {
     let mailOptions = {
         from: process.env.GMAIL,
         to: process.env.TARGET_EMAIL,
-        subject: 'Messag from ' + name + '.',
+        subject: 'Message from ' + name + '.',
         text: `${message}\n You can send them an email at ${email}.`
     };
     
