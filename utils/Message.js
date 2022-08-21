@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 const MessageSubmit = async (data) => {    
-    return false;
     try {
         await axios({
             method: 'post',
