@@ -8,7 +8,7 @@ const Experience = () => {
                 <div className='w-5/6 mx-auto'>
                     <h1 className='text-4xl tracking-tight font-bold text-purple-600 w-full text-center mx-auto mt-16'>My Work Experience</h1>
                     {experiences.map(experience => 
-                        <div key={JSON.stringify(experience)} className='max-w-full my-16 mx-auto bg-white rounded-xl shadow-md overflow-hidden justify-center items-center p-3 transform'>
+                        <div key={JSON.stringify(experience)} className='max-w-full my-16 mx-auto bg-white rounded-xl shadow-md overflow-hidden justify-center items-center p-3 transform duration-300'>
                             <div className='md:flex'>
                                 <div className='md:shrink-0'>
                                     <picture>

@@ -7,7 +7,7 @@ import Modal from '../components/ConfirmModal';
 import { useState } from 'react';
 
 const Portfolio = () => {
-  const [modal, setModal] = useState(false);
+  const [modal, setModal] = useState({visible: false, data: {name: '', email: '', message: ''}});
 
   return (
     <div className='bg-slate-800 overflow-x-hidden'>
@@ -24,7 +24,7 @@ const Portfolio = () => {
       </section>
       
       <Contact setModal={setModal} />
-      <Modal visible={modal} setModal={setModal} />
+      <Modal modal={modal} setModal={setModal} />
 
       <footer className='flex px-8 py-8 justify-center border-inherit border-t border-slate-300'>
         <Socials />
