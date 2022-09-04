@@ -12,19 +12,20 @@ const Experience = ({ data }) => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             
-            <div className='items-center content-center justify-center h-full w-[60%] self-center mx-auto bg-gray-100'>
+            <div className='items-center content-center justify-center h-full w-[95%] sm:w-[80%] md:w-[70%] max-w-md self-center mx-auto bg-gray-100'>
                 <div className='w-full h-full md:w-48 mx-auto bg-white aspect-square p-3 rounded-full mb-7 top-7'>
                     <picture>
                         <source srcSet={data.image} type="image/png" />
                         <img className='w-full h-full md:w-48 mx-auto' src={data.image} alt={`${data.company} Logo`} />
                     </picture>
                 </div>
-                <h1 className='text-2xl font-bold text-purple-600 sm:pr-12'>{data.company} - {data.role}</h1>
-                <h1 className='text-lg text-gray-600 mb-5 '>{data.dateRange}</h1>
-                <div className='text-gray-900' dangerouslySetInnerHTML={{ __html: data.htmlContent }} />
-                <div>
+                <h1 className='text-2xl font-bold text-purple-600 sm:pr-12'>{data.company}</h1>
+                <h1 className='text-2xl font-bold text-purple-600 sm:pr-12'>{data.role}</h1>
+                <h1 className='text-lg text-gray-500 mb-5 '>{data.dateRange}</h1>
+                <div className='text-gray-900 prose' dangerouslySetInnerHTML={{ __html: data.htmlContent }} />
+                <div className='my-3'>
                     <Link href="/">
-                        <a className='text-sky-600 hover:text-sky-400'>← Back to home</a>
+                        <a className='text-sky-600 hover:text-sky-400 font-bold'>← Back to home</a>
                     </Link>
                 </div>
             </div>
