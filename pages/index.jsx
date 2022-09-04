@@ -26,7 +26,7 @@ const Portfolio = () => {
       <Contact setModal={setModal} />
       <Modal modal={modal} setModal={setModal} />
 
-      <footer className='flex px-8 py-8 justify-center border-inherit border-t border-slate-300'>
+      <footer className='flex px-8 py-8 justify-center'>
         <Socials />
       </footer>
       

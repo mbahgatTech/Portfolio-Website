@@ -5,6 +5,7 @@
         "description": "Led a small team through the development lifecycle of full stack mobile and desktop applications used for wildlife conservation purposes. Acquired hands on experience facing different software development challenges including system design, UI/UX design, new developer onboarding to chosen tech stack and source control.",
         "image": "/images/scalesLogo.png",
         "alt": "Scales Logo", 
+        "report": "/scales",
         "techStack": [
             {
                 "name": "MongoDB",
