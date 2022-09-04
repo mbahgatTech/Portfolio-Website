@@ -25,8 +25,8 @@ const Experience = () => {
                                     </div>
                                 </div>
 
-                                <div className='w-full flex justify-end'>
-                                    <Link href='/scales'>
+                                <div className='w-full flex justify-end'>        
+                                    <Link href={experience.report}>
                                         <button className='bg-purple-700 mr-3 p-3 hover:scale-105 md:w-[15%] hover:bg-purple-600 active:bg-purple-800 active:scale-100 self-end text-white font-bold py-3 rounded-lg transition ease-in-out duration-300'>
                                             Read More
                                         </button>
