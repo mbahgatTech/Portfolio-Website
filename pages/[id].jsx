@@ -5,7 +5,7 @@ import { getExperienceRoutes, getData} from '../utils/Routes';
 
 const Experience = ({ data }) => {
     return (
-        <div className='bg-gray-100 min-h-screen w-screen content-center items-center justify-center'>
+        <div className='bg-gray-100 min-h-full pt-6 w-screen content-center items-center justify-center'>
             <Head>
                 <title>Mazen Bahgat</title>
                 <meta name="Mazen Bahgat's Development Portfolio" content="Software Development Skills and Experiences" />
@@ -30,7 +30,7 @@ const Experience = ({ data }) => {
                 </div>
             </div>
             <footer className='flex px-8 py-8 justify-center border-inherit border-t border-slate-300'>
-                <Socials />
+                <Socials dark={true} />
             </footer>
         </div>
     );
