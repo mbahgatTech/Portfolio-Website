@@ -1,5 +1,39 @@
 [
     {
+        "company": "NCR Corporation",
+        "position": "Back-end Developer",
+        "description": "Joined the development process of a set of containerized banking micro-services written in spring boot and express.js frameworks. Gained knowledge and applied experience on a set of skills including micro-service architecture, kafka messaging and cloud deployment.",
+        "image": "/images/ncrLogo.png",
+        "alt": "NCR Logo", 
+        "report": "/ncr",
+        "techStack": [
+            {
+                "name": "Spring Boot Framework",
+                "source": "/images/spring.webp",
+                "alt": "Spring Boot Logo",
+                "link": "https://spring.io/projects/spring-boot"
+            }, 
+            {
+                "name": "Apache Kafka",
+                "source": "/images/kafka.png",
+                "alt": "Kafka Logo",
+                "link": "https://kafka.apache.org/"
+            }, 
+            {
+                "name": "Node.js",
+                "source": "/images/node.svg",
+                "alt": "Node Logo",
+                "link": "https://nodejs.org/en/"
+            }, 
+            {
+                "name": "Docker & Docker-compose",
+                "source": "/images/docker.webp",
+                "alt": "Docker Logo",
+                "link": "https://www.docker.com/"
+            }
+        ]
+    },
+    {
         "company": "Scales Nature Park",
         "position": "Full Stack Application Developer",
         "description": "Led a small team through the development lifecycle of full stack mobile and desktop applications used for wildlife conservation purposes. Acquired hands on experience facing different software development challenges including system design, UI/UX design, new developer onboarding to chosen tech stack and source control.",
