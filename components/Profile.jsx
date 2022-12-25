@@ -25,7 +25,7 @@ const Profile = () => {
                     </div>
                 </nav>
 
-                <div className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
+                <div className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28 flex flex-col">
                     <div className="sm:text-center lg:text-left">
                         <h1 className="text-4xl tracking-tight font-extrabold text-blue-100 sm:text-5xl md:text-6xl">
                             <span className="block xl:inline">{PROFILE.MAZEN_BAHGAT}</span>{' '}<br className="hidden xl:visible"/><br className="hidden lg:visible xl:visible 2xl:visible" />
@@ -37,9 +37,9 @@ const Profile = () => {
                             {PROFILE.BRIEF}
                         </p>
                     </div>
-                    <div className="mt-8 sm:mt-10 lg:mt-16 xl:mt-20">
+                    <div className="mt-8 sm:mt-10 lg:mt-16 xl:mt-20 w-full flex">
                         <a  href="/resume.pdf"
-                            className="inline-block py-3 px-8 font-bold leading-none rounded-full text-blue-100 bg-purple-600 hover:bg-purple-500 focus:outline-none focus:bg-purple-500"
+                            className="inline-block py-3 px-8 font-bold mx-auto text-center w-full md:w-3/5 lg:mx-0 lg:w-2/4 leading-none rounded-full text-blue-100 bg-purple-600 hover:bg-purple-500 focus:outline-none focus:bg-purple-500"
                             download
                         >
                             {PROFILE.RESUME_BUTTON}
