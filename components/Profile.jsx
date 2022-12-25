@@ -1,7 +1,4 @@
-const navigation = [
-  { name: 'GitHub', href: 'https://github.com/mbahgatTech' },
-  { name: 'Linkedin', href: 'https://www.linkedin.com/in/mazen-bahgat/' },
-]
+import { PROFILE, NAVIGATION } from '../utils/json/constants';
 
 const Profile = () => {
   return (
@@ -20,7 +17,7 @@ const Profile = () => {
 
                 <nav className="relative flex items-center justify-between sm:h-10 lg:justify-start" aria-label="Global">
                     <div className="block ml-10 pr-4 space-x-8">
-                        {navigation.map(item => (
+                        {NAVIGATION.map(item => (
                             <a key={item.name} href={item.href} className="font-medium text-blue-100 hover:text-blue-100">
                                 {item.name}
                             </a>
@@ -28,17 +25,25 @@ const Profile = () => {
                     </div>
                 </nav>
 
-                <div className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
+                <div className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28 flex flex-col">
                     <div className="sm:text-center lg:text-left">
                         <h1 className="text-4xl tracking-tight font-extrabold text-blue-100 sm:text-5xl md:text-6xl">
-                            <span className="block xl:inline">Mazen Bahgat</span>{' '}<br className="hidden xl:visible"/><br className="hidden lg:visible xl:visible 2xl:visible" />
+                            <span className="block xl:inline">{PROFILE.MAZEN_BAHGAT}</span>{' '}<br className="hidden xl:visible"/><br className="hidden lg:visible xl:visible 2xl:visible" />
                         </h1>
                         <h1 className="text-4xl tracking-tight font-extrabold text-blue-100 sm:text-5xl md:text-6xl">
-                            <span className="block text-purple-600 xl:inline">Full Stack Developer</span>
+                            <span className="block text-purple-600 xl:inline">{PROFILE.JOB_TITLE}</span>
                         </h1>
                         <p className="mt-3 text-base text-blue-100 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                            I am a software engineer based in Ontario, Canada. I enjoy building web, mobile and desktop applications.
+                            {PROFILE.BRIEF}
                         </p>
+                    </div>
+                    <div className="mt-8 sm:mt-10 lg:mt-16 xl:mt-20 w-full flex">
+                        <a  href="/resume.pdf"
+                            className="inline-block py-3 px-8 font-bold mx-auto text-center w-full md:w-3/5 lg:mx-0 lg:w-2/4 leading-none rounded-full text-blue-100 bg-purple-600 hover:bg-purple-500 focus:outline-none focus:bg-purple-500"
+                            download
+                        >
+                            {PROFILE.RESUME_BUTTON}
+                        </a>
                     </div>
                 </div>
             </div>
