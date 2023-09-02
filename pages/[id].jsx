@@ -13,7 +13,7 @@ const Experience = ({ data }) => {
             </Head>
             
             <div className='items-center content-center justify-center h-full w-[95%] sm:w-[80%] md:w-[70%] max-w-md self-center mx-auto bg-gray-100'>
-                <div className='w-full h-full md:w-48 mx-auto bg-white aspect-square p-3 rounded-full mb-7 top-7'>
+                <div className='w-full h-full md:w-48 mx-auto aspect-square p-3 rounded-full mb-7 top-7'>
                     <picture>
                         <source srcSet={data.image} type="image/png" />
                         <img className='w-full h-full md:w-48 mx-auto' src={data.image} alt={`${data.company} Logo`} />
