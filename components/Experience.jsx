@@ -43,7 +43,7 @@ const Experience = () => {
                                                 <a href={elem.link}>
                                                     <picture>
                                                         <source srcSet={elem.source} type="image/webp" />
-                                                        <img className="w-full h-60" src={elem.source} alt={elem.alt} />
+                                                        <img className="w-full h-60 p-5" src={elem.source} alt={elem.alt} />
                                                     </picture>
                                                     <div className="px-6 py-4">
                                                         <div className="font-bold text-slate-500 mt-2 text-center text-xl mb-2">{elem.name}</div>

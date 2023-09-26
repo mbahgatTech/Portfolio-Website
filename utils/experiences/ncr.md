@@ -1,6 +1,6 @@
 ---
 company: NCR Corporation
-dateRange: September 2022 - Present
+dateRange: September 2022 - April 2023
 role: Back-end Developer
 image: /images/ncrLogo.png
 ---

@@ -1,5 +1,39 @@
 [
     {
+        "company": "Microsoft Corporation",
+        "position": "Software Engineering Intern",
+        "description": "Optimized engineering applications that digitize and automate data center lease acquisition processes through upstream system integrations. Delivered engineering excellence requirements, eliminating security risks presented by as-is implementations.",
+        "image": "/images/microsoft-logo.webp",
+        "alt": "Microsoft Logo", 
+        "report": "/microsoft",
+        "techStack": [
+            {
+                "name": "Power Platform",
+                "source": "/images/powerplatform.png",
+                "alt": "Power Platform Logo",
+                "link": "https://powerplatform.microsoft.com/en-us/"
+            }, 
+            {
+                "name": "Azure",
+                "source": "/images/azure.png",
+                "alt": "Azure Logo",
+                "link": "https://azure.microsoft.com/en-us"
+            }, 
+            {
+                "name": ".NET Framework",
+                "source": "/images/microsoft-net.png",
+                "alt": ".NET Logo",
+                "link": "https://dotnet.microsoft.com/en-us/"
+            }, 
+            {
+                "name": "Dynamics 365 CRM",
+                "source": "/images/dynamics.png",
+                "alt": "Dynamics Logo",
+                "link": "https://dynamics.microsoft.com/en-us/"
+            }
+        ]
+    },
+    {
         "company": "NCR Corporation",
         "position": "Back-end Developer",
         "description": "Joined the development process of a set of containerized banking micro-services written in spring boot and express.js frameworks. Gained knowledge and applied experience on a set of skills including micro-service architecture, kafka messaging and cloud deployment.",
