@@ -1,12 +1,13 @@
 import { PROFILE, NAVIGATION } from '../utils/json/constants';
+import Link from "next/link";
 
 const Profile = () => {
   return (
-    <div className="relative h-screen bg-slate-800 overflow-hidden min-h-[600px] md:min-h-[800px] lg:min-h-[400px]">
+    <div className="relative h-screen bg-gray-900 overflow-hidden min-h-[600px] md:min-h-[800px] lg:min-h-[400px]">
         <div className="max-w-7xl mx-auto">
-            <div className="relative lg:h-screen z-10 pb-8 bg-slate-800 sm:pb-16 sm: md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
+            <div className="relative lg:h-screen z-10 pb-8 bg-gray-900 sm:pb-16 sm: md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
                 <svg
-                    className="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-slate-800 transform translate-x-1/2 min-h-[600px] md:min-h-[800px] lg:min-h-[400px]"
+                    className="hidden lg:block absolute right-0 inset-y-0 h-full w-48 text-gray-900 transform translate-x-1/2 min-h-[600px] md:min-h-[800px] lg:min-h-[400px]"
                     fill="currentColor"
                     viewBox="0 0 100 100"
                     preserveAspectRatio="none"
@@ -15,11 +16,12 @@ const Profile = () => {
                     <polygon points="50,0 100,0 50,100 0,100" />
                 </svg>
 
-                <nav className="relative flex items-center justify-between sm:h-10 lg:justify-start" aria-label="Global">
+                <nav className="relative flex items-center justify-between sm:h-16 lg:justify-start" aria-label="Global">
                     <div className="block ml-10 pr-4 space-x-8">
                         {NAVIGATION.map(item => (
-                            <a key={item.name} href={item.href} className="font-medium text-blue-100 hover:text-blue-100">
+                            <a key={item.name} href={item.href} className="relative pb-1 font-medium text-blue-100 hover:text-purple-500 group transform transition-all duration-700 hover:scale-110">
                                 {item.name}
+                                <span className="absolute h-1 left-0 bottom-0 w-full bg-gradient-to-r from-purple-400 via-purple-500 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out" />
                             </a>
                         ))}
                     </div>
@@ -39,7 +41,7 @@ const Profile = () => {
                     </div>
                     <div className="mt-8 sm:mt-10 lg:mt-16 xl:mt-20 w-full flex">
                         <a  href="/resume.pdf"
-                            className="inline-block py-3 px-8 font-bold mx-auto text-center w-full md:w-3/5 lg:mx-0 lg:w-2/4 leading-none rounded-full text-blue-100 bg-purple-600 hover:bg-purple-500 focus:outline-none focus:bg-purple-500"
+                            className="inline-block py-3 px-8 font-bold mx-auto text-center w-full md:w-3/5 lg:mx-0 lg:w-2/4 leading-none rounded-full text-blue-100 hover:scale-105 bg-purple-700 hover:bg-purple-600 active:bg-purple-800 active:scale-100 self-end transition ease-in-out duration-700"
                             download
                         >
                             {PROFILE.RESUME_BUTTON}

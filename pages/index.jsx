@@ -19,7 +19,7 @@ const Portfolio = () => {
 
       <Profile />
       
-      <section className='bg-gray-100 h-full w-screen py-5'>
+      <section className='bg-gray-800 h-full w-screen py-5'>
         <Experience />
       </section>
       
