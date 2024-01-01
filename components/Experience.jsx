@@ -40,7 +40,7 @@ const Experience = () => {
                                     <div className='mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8 justify-center'>     
                                         {experience.techStack.map(elem =>
                                             <div key={JSON.stringify(experience)} className="max-w-sm rounded overflow-hidden shadow-lg mb-4 mx-auto w-full">
-                                                <a href={elem.link}>
+                                                <a href={elem.link} target="_blank" rel="noreferrer">
                                                     <picture>
                                                         <source srcSet={elem.source} type="image/webp" />
                                                         <img className="w-full h-60 p-5" src={elem.source} alt={elem.alt} />

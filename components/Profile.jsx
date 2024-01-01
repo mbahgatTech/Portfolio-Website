@@ -8,7 +8,7 @@ const Profile = () => {
                 <nav className="relative flex items-center justify-between sm:h-16 lg:justify-start" aria-label="Global">
                     <div className="block ml-10 pr-4 space-x-8">
                         {NAVIGATION.map(item => (
-                            <a key={item.name} href={item.href} className="relative pb-1 font-medium text-blue-100 hover:text-purple-500 group transform transition-all duration-700 hover:scale-110">
+                            <a key={item.name} target="_blank" rel="noreferrer" href={item.href} className="relative pb-1 font-medium text-blue-100 hover:text-purple-500 group transform transition-all duration-700 hover:scale-110">
                                 {item.name}
                                 <span className="absolute h-1 left-0 bottom-0 w-full bg-gradient-to-r from-purple-400 via-purple-500 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out" />
                             </a>
@@ -25,7 +25,7 @@ const Profile = () => {
                             <span className="block text-purple-600 xl:inline">{PROFILE.JOB_TITLE}</span>
                         </h1>
                         {PROFILE.BRIEF.map(sentence => 
-                            <p className="mt-3 text-base text-blue-100 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
+                            <p key={sentence} className="mt-3 text-base text-blue-100 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
                                 {sentence}
                             </p>
                         )}
