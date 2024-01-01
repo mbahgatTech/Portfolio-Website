@@ -1,7 +1,11 @@
 const PROFILE = {
   MAZEN_BAHGAT: 'Mazen Bahgat',
   JOB_TITLE: 'Full Stack Developer',
-  BRIEF: 'I am a software engineer based in Ontario, Canada. I enjoy building web, mobile and desktop applications.',
+  BRIEF: [ 
+    'An adept software engineer dedicated to creating impactful and seamless user experiences.', 
+    'I specialize in the development of robust and innovative solutions across web, mobile, and desktop platforms.',
+    'With a proven track record in delivering high-quality applications, I bring a wealth of experience in architecting efficient and scalable software.'
+  ],
   RESUME_BUTTON: 'Download Resume'
 };
 const NAVIGATION = [
