@@ -1,5 +1,39 @@
 [
     {
+        "company": "NCR Voyix",
+        "position": "Software Developer",
+        "description": "Fascilitated a robust suite of collaboration services between remote tellers and customers by developing a proxy server that serves encrypted cloud static content. Developed a set of web tools that empower bank tellers to execute pivotal operations like secure money transfers and interbranch chash shipments. Acquired expertise in development operations to maintain a highly sophisticated, scalable and secure micro-service architecture.",
+        "image": "/images/voyix.png",
+        "alt": "NCR Voyix Logo", 
+        "report": "/ncrvyx",
+        "techStack": [
+            {
+                "name": "Jenkins",
+                "source": "/images/jenkins.svg",
+                "alt": "Jenkins Logo",
+                "link": "https://www.jenkins.io/"
+            }, 
+            {
+                "name": "NGINX",
+                "source": "/images/nginx.svg",
+                "alt": "NGINX Logo",
+                "link": "https://nginx.org/"
+            }, 
+            {
+                "name": "React",
+                "source": "/images/react.svg",
+                "alt": "React Logo",
+                "link": "https://react.dev/"
+            }, 
+            {
+                "name": "Kubernetes",
+                "source": "/images/k8s.png",
+                "alt": "Kubernetes Logo",
+                "link": "https://kubernetes.io/"
+            }
+        ]
+    },
+    {
         "company": "Microsoft Corporation",
         "position": "Software Engineering Intern",
         "description": "Optimized engineering applications that digitize and automate data center lease acquisition processes through upstream system integrations. Delivered engineering excellence requirements, eliminating security risks presented by as-is implementations.",
