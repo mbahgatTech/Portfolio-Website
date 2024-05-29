@@ -5,7 +5,7 @@ role: Software Developer
 image: /images/voyix.png
 ---
 
-In the winter of 2024, I returned to NCR Voyix, previously a part of NCR Corporation, as a software developer co-op. During my work term, I worked on a suite of banking collaboration services and web tools that power the operations of multiple banks in North America. This experience helped me aquire vital skills in cloud computing and further developed my ability to design highly scalable and maintainable software architectures.
+In the winter of 2024, I returned to NCR Voyix, previously a part of NCR Corporation, as a software developer co-op. During my work term, I worked on a suite of banking collaboration services and web tools that power the operations of multiple banks in North America. This experience helped me aquire vital skills in cloud computing and further developed my ability to design highly scalable and maintainable software solutions.
 
 ## Collaboration Services Project
 Kicking off my co-op term at Voyix, I was onboarded to a new project where the team was building a suite of collaboration services bridging remote bank tellers and customers on interactive teller machines (ITMs).
@@ -28,11 +28,11 @@ In this project, I further developed my freshly acquired skills in Google Cloud 
 ## My Experience
 My co-op at NCR Voyix was a great and successful return to my team. I was put on an accelerated onboarding process and started learning new skills and contributing to the team from my first week. 
 
-I applied new design patterns fine-tuned and geared towards both unique and common problems. Additionally, I equipped myself with a set of new technologies to be prepared to adopt more responsibility in my future work experiences.
+I applied new design patterns fine-tuned and geared towards both unique and common problems. Additionally, I equipped myself with a set of new technologies further preparing me to adopt more responsibility in my future work experiences.
 
-The projects that I worked on perfectly aligned with my learning goals for my co-op term and helped me utilize the opporunity to exceed expectations with the new technical expertise and soft skills acquired throughout the winter. 
+The projects that I worked on perfectly aligned with my learning goals for my co-op term and helped me utilize the opportunity to exceed expectations with the new technical expertise and soft skills acquired throughout the winter. 
 
 ## Acknowledgement
-Thank you to my team's dev lead [Yuktika Pawha](https://www.linkedin.com/in/yuktika-pahwa-15ab0934/) and architect [Clifford Mathew](https://www.linkedin.com/in/clifford-mathew-1323603/), who both helped me understand the business impact we provided through our work, and assisted me in gathering and understanding the requirements for my projects. 
+Thank you to my team's dev lead [Yuktika Pahwa](https://www.linkedin.com/in/yuktika-pahwa-15ab0934/) and architect [Clifford Mathew](https://www.linkedin.com/in/clifford-mathew-1323603/), who both helped me understand the business impact we provided through our work, and assisted me in gathering and understanding the requirements for my projects. 
 
 Finally, thank you to my team for all the assistance and support they provided me to lead another successful co-op term at NCR Voyix! 
