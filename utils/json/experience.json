@@ -1,5 +1,39 @@
 [
     {
+        "company": "Microsoft Corporation",
+        "position": "Software Engineering Intern",
+        "description": "Developed partner engagement and event-driven features within Dynamics CRM to optimize data center lease acquisition processes, enhancing transparency and reducing business costs by 75%. Migrated service authentication using client secrets to Managed Service Identity (MSI), improving security and reducing maintenance overhead.",
+        "image": "/images/microsoft-logo.webp",
+        "alt": "Microsoft Logo", 
+        "report": "/microsoft-2024",
+        "techStack": [
+            {
+                "name": "Power Platform",
+                "source": "/images/powerplatform.png",
+                "alt": "Power Platform Logo",
+                "link": "https://powerplatform.microsoft.com/en-us/"
+            }, 
+            {
+                "name": "Azure",
+                "source": "/images/azure.png",
+                "alt": "Azure Logo",
+                "link": "https://azure.microsoft.com/en-us"
+            }, 
+            {
+                "name": ".NET Framework",
+                "source": "/images/microsoft-net.png",
+                "alt": ".NET Logo",
+                "link": "https://dotnet.microsoft.com/en-us/"
+            }, 
+            {
+                "name": "Dynamics 365 CRM",
+                "source": "/images/dynamics.png",
+                "alt": "Dynamics Logo",
+                "link": "https://dynamics.microsoft.com/en-us/"
+            }
+        ]
+    },
+    {
         "company": "NCR Voyix",
         "position": "Software Developer",
         "description": "Fascilitated a robust suite of collaboration services between remote tellers and customers by developing a proxy server that serves encrypted cloud static content. Developed a set of web tools that empower bank tellers to execute pivotal operations like secure money transfers and interbranch chash shipments. Acquired expertise in development operations to maintain a highly sophisticated, scalable and secure micro-service architecture.",
