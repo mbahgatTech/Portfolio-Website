@@ -1,36 +1,64 @@
 import Link from 'next/link';
 import Head from 'next/head';
+import { motion } from 'framer-motion';
 import Socials from '../components/Socials';
+import { fadeUp, staggerContainer } from '../components/ui/motion';
 import { getExperienceRoutes, getData} from '../utils/Routes';
 
+/**
+ * Experience detail page (T-008). Dark glass restyle of the per-experience
+ * report: the routing (getStaticPaths/Props via frozen Routes.js) and all
+ * rendered fields — company, role, dateRange, logo, and the markdown
+ * htmlContent — are preserved unchanged (D8, D10).
+ */
 const Experience = ({ data }) => {
     return (
-        <div className='bg-gray-100 min-h-full pt-6 w-screen content-center items-center justify-center'>
+        <div className='relative min-h-screen w-full overflow-hidden bg-ink-950 pt-16'>
             <Head>
                 <title>Mazen Bahgat</title>
                 <meta name="Mazen Bahgat's Development Portfolio" content="Software Development Skills and Experiences" />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            
-            <div className='items-center content-center justify-center h-full w-[95%] sm:w-[80%] md:w-[70%] max-w-md self-center mx-auto bg-gray-100'>
-                <div className='w-full h-full md:w-48 mx-auto aspect-square p-3 rounded-full mb-7 top-7'>
-                    <picture>
-                        <source srcSet={data.image} type="image/png" />
-                        <img className='w-full h-full md:w-48 mx-auto' src={data.image} alt={`${data.company} Logo`} />
-                    </picture>
-                </div>
-                <h1 className='text-2xl font-bold text-purple-600 sm:pr-12'>{data.company}</h1>
-                <h1 className='text-2xl font-bold text-purple-600 sm:pr-12'>{data.role}</h1>
-                <h1 className='text-lg text-gray-500 mb-5 '>{data.dateRange}</h1>
-                <div className='text-gray-900 prose' dangerouslySetInnerHTML={{ __html: data.htmlContent }} />
-                <div className='my-3'>
-                    <Link href="/">
-                        <a className='text-sky-600 hover:text-sky-400 font-bold'>← Back to home</a>
-                    </Link>
-                </div>
-            </div>
-            <footer className='flex px-8 py-8 justify-center border-inherit border-t border-slate-300'>
-                <Socials dark={true} />
+
+            <div className='pointer-events-none absolute inset-0 bg-aurora opacity-70' aria-hidden='true' />
+            <div className='pointer-events-none absolute inset-0 bg-grid [background-size:44px_44px] opacity-[0.4]' aria-hidden='true' />
+
+            <motion.article
+                variants={staggerContainer}
+                initial='hidden'
+                animate='show'
+                className='relative mx-auto w-[92%] max-w-3xl'
+            >
+                <motion.div variants={fadeUp} className='mx-auto mb-8 flex justify-center'>
+                    <div className='glass-strong flex h-32 w-32 items-center justify-center rounded-3xl p-5'>
+                        <picture>
+                            <img className='max-h-full max-w-full object-contain' src={data.image} alt={`${data.company} Logo`} />
+                        </picture>
+                    </div>
+                </motion.div>
+
+                <motion.header variants={fadeUp} className='text-center'>
+                    <h1 className='font-display text-3xl font-bold tracking-tight text-gradient sm:text-4xl'>{data.company}</h1>
+                    <h2 className='mt-2 font-display text-xl font-semibold text-white sm:text-2xl'>{data.role}</h2>
+                    <p className='mt-2 text-sm uppercase tracking-widest text-blue-100/50'>{data.dateRange}</p>
+                </motion.header>
+
+                <motion.div variants={fadeUp} className='glass mt-10 rounded-3xl p-6 shadow-inset-hair sm:p-10'>
+                    <div
+                        className='prose prose-invert max-w-none prose-headings:font-display prose-headings:text-white prose-a:text-brand-300 hover:prose-a:text-brand-200 prose-strong:text-white prose-img:rounded-xl'
+                        dangerouslySetInnerHTML={{ __html: data.htmlContent }}
+                    />
+                    <div className='mt-10'>
+                        {/* T-001/T-008: Next 14 <Link> without a nested <a>; route preserved. */}
+                        <Link href="/" className='inline-flex items-center gap-2 font-semibold text-brand-300 transition-colors hover:text-brand-200'>
+                            <span aria-hidden='true'>←</span> Back to home
+                        </Link>
+                    </div>
+                </motion.div>
+            </motion.article>
+
+            <footer className='relative mt-16 flex justify-center border-t border-white/10 px-8 py-8'>
+                <Socials />
             </footer>
         </div>
     );
