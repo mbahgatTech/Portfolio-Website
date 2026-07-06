@@ -2,21 +2,18 @@ import { motion } from 'framer-motion';
 import { fadeUp, staggerContainer, viewportOnce } from './ui/motion';
 
 /**
- * Contact section (T-007). Glass panel with animated floating-label fields.
- * Behavior is preserved verbatim (D6): `onSubmit` reads name/email/message and
- * calls `setModal({ data, visible: true })` — the confirm/email wiring lives in
- * ConfirmModal.jsx → utils/Message.js (frozen).
+ * Contact section: a glass panel with floating-label fields. On submit it passes
+ * the field values to the confirmation modal (see ConfirmModal); the message is
+ * actually sent from there via utils/Message.js.
  */
 const Contact = ({ setModal }) => {
     const fieldClass =
         'peer block w-full appearance-none rounded-lg border border-white/15 bg-white/[0.03] px-4 pt-6 pb-2 text-sm text-white transition-all duration-300 placeholder-transparent focus:border-brand-400 focus:outline-none focus:ring-2 focus:ring-brand-500/40';
-    // Floating label (T-007 user fix): the label's DEFAULT is the floated (up) state,
-    // so it stays clear of the typed value whenever the field has content; only an
-    // empty field pulls it back down over the input via `peer-placeholder-shown`, and
-    // focus always lifts it. This depends solely on `placeholder-shown` + `focus`
-    // (Tailwind sorts `focus` after `placeholder-shown`, so focus wins on an empty
-    // field) — no arbitrary `:not(:placeholder-shown)` variant — so it reliably clears
-    // on input and never overlaps the typed text.
+    // Floating label: its default position is "up", so it stays clear of the typed
+    // value whenever the field has content. An empty field drops it back down over
+    // the input (peer-placeholder-shown); focus always lifts it. Relying only on
+    // placeholder-shown + focus (focus is applied later in Tailwind's order) keeps
+    // it out of the way as soon as the user types.
     const labelClass =
         'pointer-events-none absolute left-4 top-2 origin-left text-xs text-brand-300 transition-all duration-200 peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm peer-placeholder-shown:text-blue-100/50 peer-focus:top-2 peer-focus:text-xs peer-focus:text-brand-300';
 
@@ -47,8 +44,8 @@ const Contact = ({ setModal }) => {
                     onSubmit={event => {
                         event.preventDefault();
 
-                        // Preserve the original data-capture + modal hand-off (D6); the
-                        // confirm step posts to /api/message via the frozen Message.js.
+                        // Collect the field values and open the confirmation modal;
+                        // the message is sent when the user confirms.
                         let name = event.target.name.value;
                         let email = event.target.email.value;
                         let message = event.target.message.value;
@@ -61,9 +58,8 @@ const Contact = ({ setModal }) => {
                             <label htmlFor="contact-name" className={labelClass}>Name</label>
                         </div>
                         <div className="relative">
-                            {/* type="email" + pattern give native format validation (T-007 user fix):
-                                an invalid address blocks submit — so the confirm modal only opens for a
-                                well-formed email — while a valid one still reaches setModal unchanged (D6). */}
+                            {/* type=email + pattern trigger native validation, so an invalid
+                                address blocks submit and the modal only opens for a valid email. */}
                             <input
                                 type="email"
                                 required

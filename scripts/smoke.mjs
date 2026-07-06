@@ -1,12 +1,12 @@
-// Smoke test (T-010 / D6-adjacent, D8, D11) — verifies the production server
-// serves the frozen portfolio content after the redesign. Uses Node 20's built-in
-// fetch (no browser). Run against `next start`: `npm run smoke`.
+// Smoke test — verifies the production server serves the expected portfolio
+// content. Uses Node's built-in fetch (no browser). Run it against `next start`:
+// `npm run smoke`.
 //
 // Overridable base URL: SMOKE_BASE_URL (default http://localhost:3000).
 
 const BASE = process.env.SMOKE_BASE_URL || 'http://localhost:3000';
 
-// Each detail route paired with a known heading from its (frozen) markdown body.
+// Each detail route paired with a known heading from its markdown body.
 const DETAIL_ROUTES = [
   ['/microsoft-2024', 'Partner Engagement Feature'],
   ['/ncrvyx', 'Collaboration Services Project'],
@@ -31,8 +31,8 @@ const SOCIAL_URLS = [
   'https://www.linkedin.com/in/mazen-bahgat',
 ];
 
-// D3: each experience's position + a distinctive description snippet must render
-// on the home page (hardens content-preservation beyond company names — M-5).
+// Each experience's position + a distinctive description snippet must render on
+// the home page — guards against content loss beyond just the company names.
 const POSITIONS = [
   'Software Engineering Intern',
   'Software Developer',
@@ -87,8 +87,8 @@ async function main() {
   for (const url of SOCIAL_URLS) {
     check(`/ contains social URL ${url}`, home.body.includes(url));
   }
-  // D11: the 3D hero is dynamically imported with ssr:false, so the server HTML
-  // must not contain a <canvas> element.
+  // The 3D hero is dynamically imported with ssr:false, so the server-rendered
+  // HTML must not contain a <canvas> element.
   check('/ server HTML has no <canvas> (SSR-safe 3D)', !home.body.includes('<canvas'));
 
   // --- Detail routes: 200 + known heading. ---

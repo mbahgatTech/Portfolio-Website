@@ -29,20 +29,19 @@ a {
   }
 }
 
-/* T-003/A2: standardize on a refined dark theme regardless of system preference. */
+/* Force the dark theme regardless of the OS color-scheme preference. */
 html {
   color-scheme: dark;
 }
 body {
   background-color: #07070f;
   color: #e7e7f0;
-  /* Smooth out Lenis-driven scrolling / anchor jumps when JS is unavailable. */
+  /* Smooth anchor jumps even when the smooth-scroll script isn't running. */
   scroll-behavior: smooth;
 }
 
-/* T-003/D12: reusable glassmorphism + gradient-text primitives for the redesigned
-   nav, cards, and panels. `.glass` intentionally uses Tailwind's backdrop-blur so
-   the translucency reads as real depth over the animated hero. */
+/* Reusable glassmorphism + gradient-text utilities for the nav, cards, and
+   panels. .glass uses backdrop-blur so the translucency reads as real depth. */
 @layer utilities {
   .glass {
     @apply border border-white/10 bg-white/[0.05] backdrop-blur-xl;
@@ -65,7 +64,7 @@ body {
   }
 }
 
-/* T-003: brand-tinted custom scrollbar to complete the cohesive dark aesthetic. */
+/* Brand-tinted custom scrollbar. */
 ::-webkit-scrollbar {
   width: 11px;
   height: 11px;
@@ -86,8 +85,8 @@ html {
   scrollbar-width: thin;
 }
 
-/* T-003/D14: honor reduced-motion for CSS-driven animations (the 3D loop and Lenis
-   are gated separately in HeroCanvas.jsx and _app.jsx). */
+/* Honor prefers-reduced-motion for CSS animations. The 3D loop and smooth scroll
+   are handled separately in HeroCanvas.jsx and _app.jsx. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

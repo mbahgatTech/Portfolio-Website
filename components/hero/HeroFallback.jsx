@@ -1,10 +1,7 @@
 /**
- * Static, dependency-free hero backdrop (T-004 / D11 / D14).
- *
- * Rendered while the r3f chunk downloads (dynamic import `loading` state) and
- * whenever the animated canvas must not run — reduced-motion or no WebGL — so
- * the hero is never blank and content always has a rich, on-brand background.
- * Pure CSS/Tailwind tokens (aurora, grid, glow) keep it zero-JS and SSR-safe.
+ * Static, dependency-free hero backdrop built from CSS layers (aurora, grid, and
+ * glow). Shown while the 3D chunk loads and whenever the animated canvas can't
+ * run (reduced motion or no WebGL), so the hero is never blank.
  */
 export default function HeroFallback() {
   return (

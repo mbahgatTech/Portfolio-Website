@@ -5,12 +5,11 @@ import * as THREE from 'three';
 import { useReduceMotion } from '../ui/motion';
 import HeroFallback from './HeroFallback';
 
-// T-004: three.js / react-three-fiber hero background — a *sparse, low-opacity*
-// drift of soft motes in muted brand tones (a deliberately understated ambient
-// texture, not a dense starfield — tuned down per user feedback). Imported only
-// through next/dynamic({ ssr:false }) from Profile.jsx (T-005), so this module's
-// WebGL code never runs on the server (D11). All window/document access lives
-// inside components/effects, never at module top level (SSR-safe / R3).
+// Animated hero background: a sparse, low-opacity drift of soft motes in muted
+// brand tones — a subtle ambient texture rather than a dense starfield. This
+// module is imported only via next/dynamic({ ssr:false }) from Profile.jsx, so
+// its WebGL code never runs during server rendering. Any window/document access
+// stays inside components/effects (never at module top level) to remain SSR-safe.
 
 /** Uniformly distribute `count` points inside a ball of the given radius. */
 function generateSpherePositions(count, radius) {
@@ -27,7 +26,7 @@ function generateSpherePositions(count, radius) {
   return positions;
 }
 
-/** Feature-detect a usable WebGL context so we can fall back gracefully (D11 edge case). */
+/** Feature-detect a usable WebGL context so we can fall back to the static hero. */
 function detectWebGL() {
   if (typeof document === 'undefined' || typeof window === 'undefined') return false;
   try {
@@ -70,9 +69,8 @@ function ParticleLayer({ count, radius, color, size, speed, opacity }) {
   );
 }
 
-/** Sparse ambient scene; the outer group eases *barely* toward the pointer so the
- *  parallax is felt more than seen. Two thin layers (~410 motes total, down from
- *  ~7,300) read as a subtle premium haze rather than a busy starfield. */
+/** Two thin layers of motes (~410 total) that ease *barely* toward the pointer,
+ *  so the parallax is felt more than seen. */
 function Scene() {
   const group = useRef();
 
@@ -93,11 +91,9 @@ function Scene() {
 }
 
 /**
- * Default-exported hero 3D background (D11/D14/D17).
- *
- * Decides between the animated <Canvas> and the static HeroFallback based on
- * reduced-motion and WebGL support, exposes `data-motion` for verifiability, and
- * pauses the render loop when the hero is offscreen or the tab is hidden (R2).
+ * Hero 3D background. Renders the animated canvas when motion is allowed and
+ * WebGL is available, otherwise the static HeroFallback. The render loop pauses
+ * when the hero scrolls offscreen or the tab is hidden, to save the GPU.
  */
 export default function HeroCanvas() {
   const reduceMotion = useReduceMotion();
@@ -108,7 +104,7 @@ export default function HeroCanvas() {
 
   const animate = !reduceMotion && webglOk;
 
-  // Pause on tab-blur and when scrolled out of view so the GPU idles off-hero (R2).
+  // Pause on tab-blur and when scrolled out of view so the GPU idles off-hero.
   useEffect(() => {
     if (!animate) return;
     const el = rootRef.current;
@@ -130,7 +126,7 @@ export default function HeroCanvas() {
     };
   }, [animate]);
 
-  // data-motion="reduce" is the D14 verification hook; the loop never mounts here.
+  // Expose the motion mode on the root element (read by CSS and tests).
   const motionState = reduceMotion ? 'reduce' : 'animate';
 
   if (!animate) {
@@ -147,8 +143,7 @@ export default function HeroCanvas() {
     <div ref={rootRef} data-motion={motionState} className="absolute inset-0 overflow-hidden">
       <HeroFallback />
       {/* Fade the canvas in over the static fallback once WebGL is ready, so the
-          particles arrive gracefully instead of popping in after the code-split
-          chunk finishes loading (perceived-performance polish). */}
+          particles ease in instead of popping once the code-split chunk loads. */}
       <div
         className="absolute inset-0 transition-opacity duration-700 ease-out"
         style={{ opacity: ready ? 1 : 0 }}
@@ -160,9 +155,9 @@ export default function HeroCanvas() {
           gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
           camera={{ position: [0, 0, 1] }}
           onCreated={({ scene }) => {
-            // Fog set imperatively (not via the r3f <fog> intrinsic) so the redesign
-            // keeps next lint's react/no-unknown-property rule clean without editing
-            // the shared .eslintrc.json (outside this contract's Affected Surfaces).
+            // Set fog imperatively rather than with a <fog/> element: the JSX form
+            // trips the react/no-unknown-property lint rule, and we'd rather not
+            // touch the shared ESLint config.
             scene.fog = new THREE.Fog('#07070f', 1.8, 3.4);
             setReady(true);
           }}

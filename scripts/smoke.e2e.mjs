@@ -1,16 +1,16 @@
-// Optional end-to-end smoke test (T-010). Exercises the browser-only behaviors
-// the Node fetch smoke can't: the 3D hero canvas mounting (D11), a clean console
-// (D16), the reduced-motion gate exposing data-motion="reduce" with no canvas
-// (D14/D17), no horizontal overflow across breakpoints (D16), and the contact
-// form (floating labels that clear on input, native email validation, and the
-// valid-submit → confirm modal → POST /api/message flow, D6).
+// Optional end-to-end smoke test. Exercises the browser-only behaviors the Node
+// fetch smoke can't: the 3D hero canvas mounting, a clean console, the
+// reduced-motion path (data-motion="reduce" with no canvas), no horizontal
+// overflow across breakpoints, and the contact form (labels that clear on input,
+// native email validation, and the valid-submit → confirm modal → POST
+// /api/message flow).
 //
 // Playwright is an OPTIONAL, self-installed dependency. To run:
 //   npm i -D @playwright/test && npx playwright install chromium
 //   npm run start   # in another terminal (after npm run build)
 //   npm run smoke:e2e
 //
-// If Playwright isn't installed this script SKIPS (exit 0) — the required gate is
+// If Playwright isn't installed this script SKIPS (exit 0) — the primary check is
 // `npm run smoke` (scripts/smoke.mjs), which needs no browser.
 
 const BASE = process.env.SMOKE_BASE_URL || 'http://localhost:3000';
@@ -71,7 +71,7 @@ async function main() {
     }
     await ctx.close();
 
-    // --- A detail page also loads with a clean console (D17). ---
+    // --- A detail page also loads with a clean console. ---
     const dctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
     const dpage = await dctx.newPage();
     const detailErrors = [];
@@ -101,7 +101,7 @@ async function main() {
     );
     await rctx.close();
 
-    // --- Contact form (T-007 user fix): labels clear on input; email is validated. ---
+    // --- Contact form: labels clear on input; email is validated. ---
     const cctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
     const cpage = await cctx.newPage();
     await cpage.goto(BASE + '/', { waitUntil: 'networkidle' });
@@ -137,14 +137,14 @@ async function main() {
       (await confirmPrompt.isVisible().catch(() => false)) === false
     );
 
-    // (3) A valid submission still opens the confirm modal (D6, unchanged flow).
+    // (3) A valid submission opens the confirm modal.
     await emailInput.fill('ada@example.com');
     await sendButton.click();
     await cpage.waitForTimeout(200);
-    check('valid submission opens the confirm modal (D6)', await confirmPrompt.isVisible().catch(() => false));
+    check('valid submission opens the confirm modal', await confirmPrompt.isVisible().catch(() => false));
 
-    // (4) Confirming fires POST /api/message (D6 full chain; server may 4xx/5xx
-    // without SMTP creds — we only assert the request is issued, not its result).
+    // (4) Confirming fires POST /api/message (the server may 4xx/5xx without SMTP
+    // creds — we only assert the request is issued, not its result).
     const postReq = await Promise.all([
       cpage.waitForRequest(
         (req) => req.url().includes('/api/message') && req.method() === 'POST',
@@ -152,7 +152,7 @@ async function main() {
       ).catch(() => null),
       cpage.getByRole('button', { name: 'Yes, I am sure' }).click(),
     ]).then(([req]) => req);
-    check('confirming fires POST /api/message (D6)', postReq !== null);
+    check('confirming fires POST /api/message', postReq !== null);
     await cctx.close();
   } finally {
     await browser.close();

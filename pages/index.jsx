@@ -8,9 +8,8 @@ import ScrollProgress from '../components/ui/ScrollProgress';
 import { useState } from 'react';
 
 /**
- * Portfolio composition root (T-009). Mounts the scroll-progress bar and lays
- * out the hero → experience → contact flow. The `modal` state and its wiring to
- * Contact/ConfirmModal are preserved verbatim so the email flow is unchanged (D6).
+ * Home page: lays out the hero, experience, and contact sections and owns the
+ * confirmation-modal state shared by the contact form and the modal.
  */
 const Portfolio = () => {
   const [modal, setModal] = useState({visible: false, data: {name: '', email: '', message: ''}});

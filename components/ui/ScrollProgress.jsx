@@ -2,9 +2,8 @@ import { motion, useScroll, useSpring } from 'framer-motion';
 import { useReduceMotion } from './motion';
 
 /**
- * Fixed scroll-progress bar (T-009 / D13). Binds page scroll to scaleX via
- * framer-motion's useScroll; spring smoothing is bypassed under reduced-motion
- * (D14) while the indicator itself stays visible and content is unaffected.
+ * Fixed progress bar at the top of the page that fills as you scroll. The spring
+ * smoothing is bypassed when the user prefers reduced motion.
  */
 export default function ScrollProgress() {
   const reduceMotion = useReduceMotion();

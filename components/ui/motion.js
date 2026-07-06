@@ -1,8 +1,7 @@
 import { useSyncExternalStore } from 'react';
 
-// Shared framer-motion helpers and variants for the 2026 redesign (T-003).
-// Centralizing the reveal variants keeps the section components consistent and
-// makes the reduced-motion gate (D14) verifiable from a single source.
+// Shared framer-motion variants and a reduced-motion hook, kept in one place so
+// the section components animate consistently.
 
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
@@ -24,10 +23,9 @@ function getServerSnapshot() {
 }
 
 /**
- * SSR-safe hook reporting the user's `prefers-reduced-motion` setting.
- * Drives the hard motion gates in D14 — disabling the r3f render loop
- * (HeroCanvas.jsx) and Lenis smooth scroll (_app.jsx) — without risking a
- * hydration mismatch (server snapshot is always `false`).
+ * SSR-safe hook that reports the user's prefers-reduced-motion setting. Used to
+ * disable the 3D render loop (HeroCanvas) and smooth scroll (_app). The server
+ * snapshot is always false so it never causes a hydration mismatch.
  */
 export function useReduceMotion() {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
@@ -36,7 +34,7 @@ export function useReduceMotion() {
 // Easing tuned for calm, premium reveals rather than bouncy motion.
 const EASE_OUT = [0.22, 1, 0.36, 1];
 
-/** Vertical reveal used for section blocks and cards (D13). */
+/** Fade-and-rise reveal for section blocks and cards. */
 export const fadeUp = {
   hidden: { opacity: 0, y: 28 },
   show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE_OUT } },

@@ -6,9 +6,8 @@ import { fadeUp, staggerContainer, viewportOnce, useReduceMotion } from './ui/mo
 const experiences = require('../utils/json/experience.json');
 
 /**
- * Glass experience card that reveals on scroll (D13) and tilts toward the
- * pointer for depth (disabled under reduced-motion, D14). The reveal + tilt are
- * purely presentational — the rendered experience data is untouched (D10).
+ * Glass experience card that fades in on scroll and tilts toward the pointer for
+ * a subtle depth effect. The tilt is disabled when the user prefers reduced motion.
  */
 function TiltCard({ children, className }) {
   const reduceMotion = useReduceMotion();
@@ -50,10 +49,8 @@ function TiltCard({ children, className }) {
 }
 
 /**
- * Work-experience section (T-006). Renders all five experiences from the frozen
- * experience.json as glassmorphic cards with scroll reveals and a tech-stack
- * grid, preserving every company/position/description, the "Read More" route
- * links, and each tech logo/link/alt (D3, D5, D10, D12, D13).
+ * Work-experience section: renders each entry from experience.json as a glass
+ * card with a "Read More" link to its detail page and a tech-stack grid.
  */
 const Experience = () => {
   return (
@@ -105,7 +102,7 @@ const Experience = () => {
                       <p className="mt-3 leading-relaxed text-blue-100/70">{experience.description}</p>
 
                       <div className="mt-6 flex justify-start">
-                        {/* T-001/T-006: Next 14 <Link> styled as a button; route preserved (D5). */}
+                        {/* Next.js Link styled as a button (no nested anchor). */}
                         <Link
                           href={experience.report}
                           className="group/btn inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:border-brand-400/50 hover:bg-brand-600/20 hover:shadow-glow"

@@ -6,10 +6,8 @@ import { fadeUp, staggerContainer } from '../components/ui/motion';
 import { getExperienceRoutes, getData} from '../utils/Routes';
 
 /**
- * Experience detail page (T-008). Dark glass restyle of the per-experience
- * report: the routing (getStaticPaths/Props via frozen Routes.js) and all
- * rendered fields — company, role, dateRange, logo, and the markdown
- * htmlContent — are preserved unchanged (D8, D10).
+ * Experience detail page: renders one experience's company, role, date range,
+ * logo, and markdown body. Page data comes from getStaticProps (see utils/Routes.js).
  */
 const Experience = ({ data }) => {
     return (
@@ -49,7 +47,7 @@ const Experience = ({ data }) => {
                         dangerouslySetInnerHTML={{ __html: data.htmlContent }}
                     />
                     <div className='mt-10'>
-                        {/* T-001/T-008: Next 14 <Link> without a nested <a>; route preserved. */}
+                        {/* Next.js Link without a nested anchor. */}
                         <Link href="/" className='inline-flex items-center gap-2 font-semibold text-brand-300 transition-colors hover:text-brand-200'>
                             <span aria-hidden='true'>←</span> Back to home
                         </Link>

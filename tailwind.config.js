@@ -1,8 +1,6 @@
 /** @type {import('tailwindcss').Config} */
-// T-003/D15: cohesive design-token system consumed by the redesigned surfaces.
-// The palette evolves the site's original purple/blue accent DNA into a full
-// brand ramp plus electric-cyan/magenta accents, layered "ink" darks, glow
-// shadows, and reusable motion keyframes.
+// Design tokens for the site: a purple/blue "brand" ramp, electric-cyan/magenta
+// accents, layered "ink" darks, glow shadows, and shared motion keyframes.
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
@@ -41,7 +39,7 @@ module.exports = {
         },
       },
       fontFamily: {
-        // Wired to the next/font CSS variable set in pages/_app.jsx (A5).
+        // Uses the next/font CSS variable defined in pages/_app.jsx.
         display: ["var(--font-display)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       backgroundImage: {

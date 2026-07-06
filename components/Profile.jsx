@@ -4,19 +4,19 @@ import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { PROFILE, NAVIGATION } from '../utils/json/constants';
 import { fadeUp, staggerContainer, useReduceMotion } from './ui/motion';
 import HeroFallback from './hero/HeroFallback';
+import DownloadIcon from './icons/download.svg';
 
-// T-005/D11: the animated three.js background is code-split and client-only
-// (ssr:false) so WebGL never runs on the server and the "/" SSR HTML has no
-// <canvas>. A static HeroFallback is server-rendered as the base layer.
+// The animated three.js background is code-split and client-only (ssr:false), so
+// WebGL never runs during server rendering. HeroFallback is the static base layer
+// that renders immediately and stays visible while the 3D chunk loads.
 const HeroBackground = dynamic(() => import('./hero/HeroCanvas'), {
   ssr: false,
   loading: () => null,
 });
 
 /**
- * Résumé call-to-action with a magnetic hover (D13 micro-interaction) that
- * preserves the original `<a href="/resume.pdf" download>` contract (D7).
- * The magnetic pull is skipped under prefers-reduced-motion (D14).
+ * Résumé download button that drifts slightly toward the cursor on hover. The
+ * magnetic effect is skipped when the user prefers reduced motion.
  */
 function MagneticResumeButton() {
   const reduceMotion = useReduceMotion();
@@ -50,32 +50,19 @@ function MagneticResumeButton() {
       className="group relative inline-flex items-center justify-center gap-2.5 rounded-full bg-brand-gradient px-8 py-4 font-semibold text-white shadow-glow transition-shadow duration-500 hover:shadow-glow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300 focus-visible:ring-offset-2 focus-visible:ring-offset-ink-950"
     >
       <span className="relative z-10">{PROFILE.RESUME_BUTTON}</span>
-      <svg
-        aria-hidden="true"
-        className="relative z-10 h-5 w-5 transition-transform duration-500 group-hover:translate-y-0.5"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" />
-      </svg>
+      <DownloadIcon className="relative z-10 h-5 w-5 transition-transform duration-500 group-hover:translate-y-0.5" />
     </motion.a>
   );
 }
 
 /**
- * Hero section (T-005). Glass nav, gradient display headline, and a staggered
- * framer-motion entrance sit above the code-split 3D particle background while
- * preserving every content string and link sourced from the frozen constants.js
- * (name, job title, all three briefs, résumé download, GitHub/LinkedIn nav).
+ * Hero section: glass nav, a gradient headline, and a staggered entrance
+ * animation layered over the 3D particle background. All text and links come
+ * from constants.js.
  */
 const Profile = () => {
   return (
     <section className="relative isolate flex min-h-screen flex-col overflow-hidden bg-ink-950 text-white">
-      {/* D11: server-rendered static backdrop + client-only animated canvas. */}
       <div className="absolute inset-0 -z-0">
         <HeroFallback />
         <HeroBackground />
@@ -83,7 +70,6 @@ const Profile = () => {
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-40 bg-gradient-to-b from-transparent to-ink-950" />
 
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col px-5 sm:px-8">
-        {/* D12: glassmorphic navigation with the preserved GitHub/LinkedIn links. */}
         <nav className="glass mt-5 flex items-center justify-between rounded-2xl px-5 py-3 shadow-inset-hair sm:px-7" aria-label="Global">
           <span className="font-display text-lg font-bold tracking-tight">
             <span className="text-gradient">MB</span>
@@ -139,7 +125,7 @@ const Profile = () => {
             </motion.div>
           </motion.div>
 
-          {/* Profile photo in a glowing glass frame; alt text preserved. */}
+          {/* Profile photo in a glowing glass frame. */}
           <motion.div
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
