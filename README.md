@@ -23,7 +23,8 @@ server-rendered (no `<canvas>` in the SSR HTML).
 
 ## Getting Started
 
-Install dependencies and start the dev server:
+
+First, run the development server:
 
 ```bash
 npm install
