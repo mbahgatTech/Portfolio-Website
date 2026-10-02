@@ -18,8 +18,9 @@ const SEO = {
   SITE_URL: 'https://www.mazenbahgat.com',
   SITE_NAME: PROFILE.MAZEN_BAHGAT,
   HOME_TITLE: `${PROFILE.MAZEN_BAHGAT} | ${PROFILE.JOB_TITLE}`,
-  // Shown under the title in search results; keep it under ~160 characters.
-  HOME_DESCRIPTION: 'Microsoft software engineer Mazen Bahgat builds platforms for AI data center deployments. He has cut costs 75% and built banking software for 600+ branches.',
+  // Shown under the title in search results and in link previews. Reuses the home
+  // page intro so the two always match; search results show about the first 160 characters.
+  HOME_DESCRIPTION: PROFILE.BRIEF.join(' '),
   IMAGE: { PATH: '/images/profile.jpg', WIDTH: 1245, HEIGHT: 1552, ALT: 'Photo of Mazen Bahgat' },
 };
 const MODAL = {
