@@ -108,7 +108,8 @@ Search-engine and link-preview metadata lives in a few places:
 | What | Where |
 | --- | --- |
 | Title, meta description, canonical URL, Open Graph / Twitter tags, JSON-LD | `components/Seo.jsx`, used by `pages/index.jsx` and `pages/[id].jsx` |
-| Site URL, home title and description, link-preview image | `SEO` in `utils/json/constants.js` |
+| Site URL, home title, link-preview image | `SEO` in `utils/json/constants.js` |
+| Home page description | Reuses the home page intro (`PROFILE.BRIEF` in `utils/json/constants.js`), so editing the intro updates it |
 | Experience page descriptions | Generated from the first paragraph of each markdown file; add a `description:` front-matter field to override |
 | Page language (`<html lang="en">`) | `pages/_document.jsx` |
 | Crawler rules and sitemap | `public/robots.txt`, `public/sitemap.xml` |
