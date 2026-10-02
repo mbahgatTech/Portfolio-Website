@@ -19,7 +19,7 @@ const SEO = {
   SITE_NAME: PROFILE.MAZEN_BAHGAT,
   HOME_TITLE: `${PROFILE.MAZEN_BAHGAT} | ${PROFILE.JOB_TITLE}`,
   // Shown under the title in search results; keep it under ~160 characters.
-  HOME_DESCRIPTION: 'Portfolio of Mazen Bahgat, a full stack developer who has built software at Microsoft and NCR using React, Node.js, .NET, Azure, and Kubernetes.',
+  HOME_DESCRIPTION: 'Microsoft software engineer Mazen Bahgat builds platforms for AI data center deployments. He has cut costs 75% and built banking software for 600+ branches.',
   IMAGE: { PATH: '/images/profile.jpg', WIDTH: 1245, HEIGHT: 1552, ALT: 'Photo of Mazen Bahgat' },
 };
 const MODAL = {
