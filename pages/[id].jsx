@@ -1,9 +1,20 @@
 import Link from 'next/link';
-import Head from 'next/head';
 import { motion } from 'framer-motion';
+import Seo from '../components/Seo';
 import Socials from '../components/Socials';
 import { fadeUp, staggerContainer } from '../components/ui/motion';
 import { getExperienceRoutes, getData} from '../utils/Routes';
+import { SEO } from '../utils/json/constants';
+
+/**
+ * Builds a unique search-result title, e.g.
+ * "Back-end Developer at NCR Corporation (2022–2023) | Mazen Bahgat". The years
+ * keep the two Microsoft internship pages from sharing a title.
+ */
+const pageTitle = ({ role, company, dateRange }) => {
+    const years = [...new Set(dateRange?.match(/\d{4}/g))].join('–');
+    return `${role} at ${company}${years ? ` (${years})` : ''} | ${SEO.SITE_NAME}`;
+};
 
 /**
  * Experience detail page: renders one experience's company, role, date range,
@@ -12,11 +23,7 @@ import { getExperienceRoutes, getData} from '../utils/Routes';
 const Experience = ({ data }) => {
     return (
         <div className='relative min-h-screen w-full overflow-hidden bg-ink-950 pt-16'>
-            <Head>
-                <title>Mazen Bahgat</title>
-                <meta name="Mazen Bahgat's Development Portfolio" content="Software Development Skills and Experiences" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
+            <Seo title={pageTitle(data)} description={data.description} path={`/${data.id}`} />
 
             <div className='pointer-events-none absolute inset-0 bg-aurora opacity-70' aria-hidden='true' />
             <div className='pointer-events-none absolute inset-0 bg-grid [background-size:44px_44px] opacity-[0.4]' aria-hidden='true' />
