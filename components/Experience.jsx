@@ -91,7 +91,7 @@ const Experience = () => {
                     <div className="mb-6 flex shrink-0 justify-center md:mb-0">
                       <div className="glass-strong flex h-28 w-28 items-center justify-center rounded-2xl p-4">
                         <picture>
-                          <img className="max-h-full max-w-full object-contain" src={experience.image} alt={experience.alt} />
+                          <img className="max-h-full max-w-full object-contain" src={experience.image} alt={experience.alt} loading="lazy" decoding="async" />
                         </picture>
                       </div>
                     </div>
@@ -108,6 +108,8 @@ const Experience = () => {
                           className="group/btn inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:border-brand-400/50 hover:bg-brand-600/20 hover:shadow-glow"
                         >
                           Read More
+                          {/* Hidden extra words so screen readers and search engines know where each link goes. */}
+                          <span className="sr-only"> about my {experience.position} role at {experience.company}</span>
                           <span aria-hidden="true" className="transition-transform duration-300 group-hover/btn:translate-x-1">→</span>
                         </Link>
                       </div>
@@ -131,6 +133,8 @@ const Experience = () => {
                                 className="h-14 w-14 object-contain opacity-85 transition-opacity duration-300 group-hover/tech:opacity-100"
                                 src={elem.source}
                                 alt={elem.alt}
+                                loading="lazy"
+                                decoding="async"
                               />
                             </picture>
                             <div className="text-sm font-medium text-blue-100/70 transition-colors duration-300 group-hover/tech:text-white">

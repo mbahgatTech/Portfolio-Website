@@ -1,0 +1,6 @@
+# Allow all search engines to crawl the site, except the server-only API routes.
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://www.mazenbahgat.com/sitemap.xml

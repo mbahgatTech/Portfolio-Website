@@ -79,8 +79,10 @@ npm run smoke          # in another terminal (defaults to http://localhost:3000)
 `npm run smoke` asserts that `/` serves the five experiences (company names,
 "Read More" links, résumé link, social URLs) with no `<canvas>` in the SSR HTML,
 that each of the five detail routes returns `200` with its known heading, and that
-`/resume.pdf` is served as `application/pdf`. Override the target with
-`SMOKE_BASE_URL`.
+`/resume.pdf` is served as `application/pdf`. It also checks the SEO basics: every
+page has a unique title, a meta description, and a canonical URL; the home page
+has `lang="en"`, Open Graph tags, and JSON-LD; and `/robots.txt` and
+`/sitemap.xml` are served. Override the target with `SMOKE_BASE_URL`.
 
 ### Optional end-to-end smoke (Playwright)
 
@@ -98,6 +100,20 @@ npm run smoke:e2e
 If Playwright is not installed the script skips (exit 0). As a manual fallback,
 verify the same behaviors in your browser and its DevTools (Rendering → emulate
 `prefers-reduced-motion`).
+
+## SEO
+
+Search-engine and link-preview metadata lives in a few places:
+
+| What | Where |
+| --- | --- |
+| Title, meta description, canonical URL, Open Graph / Twitter tags, JSON-LD | `components/Seo.jsx`, used by `pages/index.jsx` and `pages/[id].jsx` |
+| Site URL, home title and description, link-preview image | `SEO` in `utils/json/constants.js` |
+| Experience page descriptions | Generated from the first paragraph of each markdown file; add a `description:` front-matter field to override |
+| Page language (`<html lang="en">`) | `pages/_document.jsx` |
+| Crawler rules and sitemap | `public/robots.txt`, `public/sitemap.xml` |
+
+When you add an experience, also add its URL to `public/sitemap.xml`.
 
 ## Deploy
 

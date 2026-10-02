@@ -138,7 +138,7 @@ const Profile = () => {
                 <img
                   className="h-full w-full rounded-[1.6rem] object-cover object-top"
                   src="/images/profile.jpg"
-                  alt="Photo of Mazen"
+                  alt="Photo of Mazen Bahgat"
                 />
               </picture>
             </div>

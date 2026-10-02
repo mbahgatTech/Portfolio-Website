@@ -6,6 +6,12 @@
 
 const BASE = process.env.SMOKE_BASE_URL || 'http://localhost:3000';
 
+// Production origin used in canonical URLs, robots.txt, and sitemap.xml.
+const SITE_URL = 'https://www.mazenbahgat.com';
+
+// Matches a non-trivial meta description (search-result snippet).
+const META_DESCRIPTION = /<meta name="description" content="[^"]{50,}"/;
+
 // Each detail route paired with a known heading from its markdown body.
 const DETAIL_ROUTES = [
   ['/microsoft-2024', 'Partner Engagement Feature'],
@@ -91,12 +97,37 @@ async function main() {
   // HTML must not contain a <canvas> element.
   check('/ server HTML has no <canvas> (SSR-safe 3D)', !home.body.includes('<canvas'));
 
-  // --- Detail routes: 200 + known heading. ---
+  // SEO metadata that search engines and link previews read from the server HTML.
+  check('/ declares <html lang="en">', home.body.includes('<html lang="en"'));
+  check('/ has a meta description', META_DESCRIPTION.test(home.body));
+  check('/ has its canonical URL', home.body.includes(`<link rel="canonical" href="${SITE_URL}/"`));
+  check('/ has Open Graph tags', home.body.includes('property="og:title"') && home.body.includes('property="og:image"'));
+  check('/ has JSON-LD structured data', home.body.includes('application/ld+json'));
+
+  // --- Detail routes: 200 + known heading + their own title/description/canonical. ---
+  const titles = [];
   for (const [route, heading] of DETAIL_ROUTES) {
     console.log(`GET ${route}`);
     const { res, body } = await get(route);
     check(`${route} returns 200`, res.status === 200);
     check(`${route} contains heading "${heading}"`, body.includes(heading));
+    check(`${route} has a meta description`, META_DESCRIPTION.test(body));
+    check(`${route} has its canonical URL`, body.includes(`<link rel="canonical" href="${SITE_URL}${route}"`));
+    titles.push(body.match(/<title>([^<]*)<\/title>/)?.[1] ?? '');
+  }
+  check('home and detail pages all have unique titles', new Set([home.body.match(/<title>([^<]*)<\/title>/)?.[1], ...titles]).size === titles.length + 1);
+
+  // --- Crawler files. ---
+  console.log('GET /robots.txt');
+  const robots = await get('/robots.txt');
+  check('/robots.txt returns 200', robots.res.status === 200);
+  check('/robots.txt points to the sitemap', robots.body.includes(`Sitemap: ${SITE_URL}/sitemap.xml`));
+
+  console.log('GET /sitemap.xml');
+  const sitemap = await get('/sitemap.xml');
+  check('/sitemap.xml returns 200', sitemap.res.status === 200);
+  for (const route of ['/', ...EXPERIENCE_LINKS]) {
+    check(`/sitemap.xml lists ${route}`, sitemap.body.includes(`<loc>${SITE_URL}${route}</loc>`));
   }
 
   // --- Static résumé asset. ---
