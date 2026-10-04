@@ -1,0 +1,2171 @@
+/* Case Board ------------------------------------------------------------------
+   An evidence board under one desk lamp, worked through by a scroll-driven camera.
+   Two modes share the materials:
+   - camera: the board at full size in a sticky viewport, moved by camera.js.
+     Switched on before first paint by CaseBoard's boot script when motion is
+     allowed (data-mode="camera").
+   - flow: the same paper laid out to read top to bottom, for reduced motion and
+     without scripts (data-mode="flow", the server default).
+   The layout media query below must match LAYOUT_QUERY in layout.js. Textures
+   (--cork, --grain, --wear) are made in the browser by textures.js. */
+
+.root {
+  --wall: #1d1a17;
+  --ink: #1f1c19;
+  --ink-soft: #4d463e;
+  --marker: #17150f;
+  --marker-blue: #213a8a;
+  --stamp: #c0352c;
+  --rule-red: #d96a70;
+  --rule-blue: rgba(110, 150, 200, 0.5);
+  --amber: #f0a73a;
+  --chrome-text: #f3ebdd;
+  --chrome-muted: rgba(239, 229, 212, 0.62);
+  --ring: #1f3d8a;
+  --grain: none;
+  --cork: none;
+  --wear: none;
+  --lift: 0 1px 1px rgba(25, 14, 4, 0.22), 0 7px 12px -3px rgba(30, 16, 4, 0.38), 0 22px 34px -16px rgba(30, 16, 4, 0.5);
+  --lift-high: 0 2px 2px rgba(25, 14, 4, 0.2), 0 14px 22px -6px rgba(30, 16, 4, 0.42), 0 38px 54px -20px rgba(30, 16, 4, 0.55);
+  --font-typed: var(--font-board-typed), 'Courier New', monospace;
+  --font-marker: var(--font-board-marker), 'Segoe Print', 'Bradley Hand', cursive;
+  --font-tape: var(--font-board-tape), 'Arial Narrow', sans-serif;
+
+  /* The area the camera may frame, clear of the fixed controls (unitless px; camera.js reads these). */
+  --il: 14;
+  --ir: 14;
+  --it: 16;
+  --ib: 100;
+  --step: 90vh;
+  --W: var(--W-p);
+  --H: var(--H-p);
+  --shots: var(--shots-p);
+
+  position: relative;
+  min-height: 100vh;
+  background: var(--wall);
+  color: var(--ink);
+  font-family: var(--font-typed);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@supports (height: 100svh) {
+  .root {
+    --step: 90svh;
+  }
+}
+
+/* The landscape board: matches LAYOUT_QUERY in layout.js. */
+@media (min-width: 900px) and (min-height: 600px) and (min-aspect-ratio: 1/1) {
+  .root {
+    --il: 32;
+    --ir: 32;
+    --it: 32;
+    --ib: 88;
+    --W: var(--W-l);
+    --H: var(--H-l);
+    --shots: var(--shots-l);
+  }
+}
+
+@media (min-width: 1180px) and (min-height: 600px) and (min-aspect-ratio: 1/1) {
+  .root {
+    --il: 246;
+    --ir: 40;
+    --it: 36;
+    --ib: 40;
+  }
+}
+
+.root ::selection {
+  background: rgba(240, 167, 58, 0.38);
+}
+
+.root :focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 3px;
+}
+
+.skipLink {
+  position: fixed;
+  z-index: 100;
+  left: 12px;
+  top: 12px;
+  padding: 10px 14px;
+  background: #fbfaf4;
+  color: var(--ink);
+  font: 700 15px/1.2 var(--font-typed);
+  box-shadow: var(--lift);
+  transform: translateY(-180%);
+  transition: transform 0.2s ease;
+}
+
+.skipLink:focus {
+  transform: none;
+}
+
+/* --- Structure: camera mode ---------------------------------------------------- */
+
+.main {
+  display: block;
+}
+
+.track {
+  position: relative;
+}
+
+.root[data-mode='camera'] .track {
+  /* One step per shot, a viewport to rest in, and the last shot held a little
+     longer (0.35 of a step) before the page moves on. */
+  height: calc((var(--shots) - 1 + 0.35) * 90vh + 100vh);
+  height: calc((var(--shots) - 1 + 0.35) * var(--step) + var(--step) / 0.9);
+}
+
+.anchors {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.anchor {
+  --a0: var(--p0);
+  --an: var(--pn);
+  position: absolute;
+  left: 0;
+  width: 1px;
+  top: calc(var(--a0) * var(--step));
+  height: calc(var(--an) * var(--step));
+}
+
+@media (min-width: 900px) and (min-height: 600px) and (min-aspect-ratio: 1/1) {
+  .anchor {
+    --a0: var(--l0);
+    --an: var(--ln);
+  }
+}
+
+.root[data-mode='camera'] .viewport {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: calc(var(--step) / 0.9);
+  overflow: hidden;
+  /* Not a scroll container: focus and find-in-page can't scroll the frame out from under the camera. */
+  overflow: clip;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 36%, rgba(255, 196, 130, 0.13) 0%, rgba(255, 196, 130, 0) 70%),
+    radial-gradient(ellipse 120% 100% at 50% 40%, #2c251e 0%, #1d1a17 55%, #12100e 100%);
+}
+
+/* The whole board, framed in the free area before scripts run; camera.js takes over from the same view. */
+.root[data-mode='camera'] .rig {
+  position: absolute;
+  left: calc(var(--il) * 1px + (100% - (var(--il) + var(--ir)) * 1px) / 2);
+  top: calc(var(--it) * 1px + (100% - (var(--it) + var(--ib)) * 1px) / 2);
+  width: calc(var(--W) * 1px);
+  height: calc(var(--H) * 1px);
+  transform-origin: 0 0;
+  transform: scale(min((var(--vpw, 1440) - var(--il) - var(--ir)) / var(--W), (var(--vph, 900) - var(--it) - var(--ib)) / var(--H))) translate(-50%, -50%);
+}
+
+.root[data-mode='camera'] .intro,
+.root[data-mode='camera'] .experience,
+.root[data-mode='camera'] .exhibit,
+.root[data-mode='camera'] .contactSection {
+  display: contents;
+}
+
+.item {
+  --x: var(--px);
+  --y: var(--py);
+  --w: var(--pw);
+  --h: var(--ph);
+  --r: var(--pr);
+  --shadow: var(--lift);
+  position: relative;
+}
+
+@media (min-width: 900px) and (min-height: 600px) and (min-aspect-ratio: 1/1) {
+  .item {
+    --x: var(--lx);
+    --y: var(--ly);
+    --w: var(--lw);
+    --h: var(--lh);
+    --r: var(--lr);
+  }
+}
+
+.root[data-mode='camera'] .item {
+  position: absolute;
+  z-index: 2;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  transform: rotate(var(--r));
+}
+
+.root[data-camera-moving] .rig {
+  pointer-events: none;
+}
+
+.item[data-lit='on'] {
+  --shadow: var(--lift-high);
+}
+
+/* --- The board: aluminium frame, cork, the lamp's pool of light ------------------ */
+
+.board {
+  display: none;
+}
+
+.root[data-mode='camera'] .board {
+  display: block;
+  position: absolute;
+  inset: 0;
+  border-radius: 7px;
+  background: linear-gradient(142deg, #5d6064 0%, #c8cbce 14%, #8b8e92 30%, #e3e5e6 48%, #8e9195 66%, #c4c7ca 84%, #64676b 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35),
+    inset 0 0 0 3px rgba(0, 0, 0, 0.18),
+    0 50px 110px rgba(0, 0, 0, 0.62),
+    0 14px 28px rgba(0, 0, 0, 0.45);
+}
+
+.board::before,
+.board::after {
+  content: '';
+  position: absolute;
+  inset: 34px;
+  border-radius: 2px;
+}
+
+.board::before {
+  background: var(--cork) 0 0 / 512px 512px repeat, #a87c4f;
+  box-shadow: inset 0 0 0 2px rgba(48, 30, 12, 0.6), inset 0 7px 16px rgba(0, 0, 0, 0.45);
+}
+
+/* One lamp above the middle of the board: warm in the centre, falling off to the frame. */
+.board::after {
+  background:
+    radial-gradient(ellipse 46% 52% at 50% 44%, rgba(255, 214, 150, 0.17) 0%, rgba(255, 214, 150, 0) 100%),
+    radial-gradient(ellipse 78% 82% at 50% 46%, rgba(20, 10, 2, 0) 48%, rgba(20, 10, 2, 0.4) 100%);
+  pointer-events: none;
+}
+
+/* --- Strings and pins ------------------------------------------------------------ */
+
+.strings,
+.pins {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.strings {
+  z-index: 1;
+}
+
+.pins {
+  z-index: 3;
+}
+
+.root[data-mode='camera'] .layerP {
+  display: block;
+}
+
+@media (min-width: 900px) and (min-height: 600px) and (min-aspect-ratio: 1/1) {
+  .root[data-mode='camera'] .layerP {
+    display: none;
+  }
+
+  .root[data-mode='camera'] .layerL {
+    display: block;
+  }
+}
+
+.stringShadows path {
+  fill: none;
+  stroke: rgba(34, 18, 4, 0.3);
+  stroke-width: 3.4;
+  stroke-linecap: round;
+}
+
+.string {
+  transition: opacity 0.45s ease;
+}
+
+.stringBase,
+.stringTwist {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.stringBase {
+  stroke: #1b1916;
+  stroke-width: 3;
+}
+
+/* The ply of the wool: short light dashes along the strand. */
+.stringTwist {
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 2.2;
+  stroke-dasharray: 2 4.2;
+  stroke-linecap: butt;
+}
+
+.string_trail .stringBase {
+  stroke: #15130f;
+  stroke-width: 3.6;
+}
+
+.string_tie .stringBase {
+  stroke: #2d2823;
+  stroke-width: 2.2;
+}
+
+.string_tie .stringTwist {
+  display: none;
+}
+
+.string_uses .stringBase {
+  stroke: #c2222c;
+  stroke-width: 3.4;
+}
+
+.string_kin .stringBase {
+  stroke: #233f7f;
+  stroke-width: 3.2;
+}
+
+.root[data-lit-active] .string:not([data-on]) {
+  opacity: 0.24;
+}
+
+.string[data-on] .stringBase {
+  stroke-width: 4.4;
+}
+
+.string_uses[data-on] .stringBase {
+  stroke: #dc2a35;
+}
+
+.pinShadow {
+  fill: rgba(28, 14, 2, 0.34);
+}
+
+.pinHead {
+  stroke: rgba(0, 0, 0, 0.28);
+  stroke-width: 0.8;
+}
+
+.pinGlint {
+  fill: rgba(255, 255, 255, 0.82);
+}
+
+/* --- The subject: a Polaroid ----------------------------------------------------- */
+
+.subjectItem {
+  container-type: inline-size;
+}
+
+.polaroid {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 5cqw 5cqw 0;
+  overflow: hidden;
+  border-radius: 1.5px;
+  background: var(--grain), linear-gradient(172deg, #fcfbf7 0%, #f0ede4 100%);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.35s ease;
+}
+
+.photo {
+  position: relative;
+  flex: none;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #27231e;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.35);
+}
+
+/* The full-length profile photo, cropped to head and shoulders (61% of its width,
+   from 3.5% down) and toned like instant film. */
+.photoImage {
+  position: absolute;
+  left: -29.9%;
+  top: -7.1%;
+  width: 163.9%;
+  max-width: none;
+  height: auto;
+  filter: sepia(0.12) saturate(0.88) contrast(0.9) brightness(1.06);
+}
+
+.gloss {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(118deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.06) 33%, rgba(255, 255, 255, 0) 34%),
+    radial-gradient(circle at 50% 45%, rgba(40, 24, 8, 0) 58%, rgba(40, 24, 8, 0.28) 100%);
+  pointer-events: none;
+}
+
+.caption {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4cqw;
+  min-height: 0;
+  padding-bottom: 1.5cqw;
+  text-align: center;
+}
+
+/* Written across the strip, not quite level. */
+.name,
+.jobTitle {
+  transform: rotate(-1.6deg);
+}
+
+.name {
+  margin: 0;
+  font: 400 11.2cqw/1 var(--font-marker);
+  color: var(--marker);
+}
+
+.jobTitle {
+  margin: 0;
+  font: 400 5.4cqw/1.1 var(--font-marker);
+  color: var(--marker-blue);
+}
+
+/* --- The profile: a typed sheet --------------------------------------------------- */
+
+.sheet {
+  width: 100%;
+  height: 100%;
+  padding: 34px 40px 40px;
+  background: var(--grain), linear-gradient(180deg, #f7f3e9 0%, #efe9db 100%);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.35s ease;
+  font: 400 20px/30px var(--font-typed);
+  color: var(--ink);
+  text-shadow: 0 0 0.7px rgba(31, 28, 25, 0.45);
+}
+
+.sheetHead {
+  margin: 0 0 22px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid currentColor;
+  font: 700 20px/30px var(--font-typed);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.sheet p {
+  margin: 0 0 14px;
+}
+
+.sheet p:last-child {
+  margin-bottom: 0;
+}
+
+/* --- The résumé: a kraft envelope ------------------------------------------------- */
+
+.envelope {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 3px;
+  background: var(--grain), linear-gradient(160deg, #c49a68 0%, #b1844f 55%, #9e7142 100%);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.35s ease;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.flap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 54%;
+  filter: drop-shadow(0 3px 2px rgba(60, 34, 8, 0.35));
+}
+
+.flap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--grain), linear-gradient(180deg, #ad7f4b 0%, #9b6d3b 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.envLabel {
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  bottom: 13%;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 13px 16px 15px;
+  background: var(--grain), #f8f3e7;
+  box-shadow: 0 1px 2px rgba(40, 22, 6, 0.3);
+  transform: rotate(-1.2deg);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.envelope:hover .envLabel {
+  transform: translateY(-3px) rotate(-1.2deg);
+}
+
+.envKicker {
+  font: 600 13px/1 var(--font-tape);
+  letter-spacing: 0.3em;
+  color: var(--stamp);
+}
+
+.envText {
+  font: 700 22px/1.15 var(--font-typed);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
+}
+
+/* --- Links: index cards ------------------------------------------------------------ */
+
+.linkCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  padding: 18px 22px 17px;
+  background: var(--grain), #fbfaf4;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.35s ease;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.linkCard::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 38px;
+  height: 2px;
+  background: var(--rule-red);
+}
+
+.linkName {
+  font: 400 38px/1 var(--font-marker);
+  color: var(--marker);
+}
+
+.linkWhere {
+  font: 400 14px/1.2 var(--font-typed);
+  color: var(--ink-soft);
+  overflow-wrap: anywhere;
+}
+
+.linkCard:hover .linkName {
+  color: var(--marker-blue);
+}
+
+/* --- Exhibits: index card, glossy print, onionskin, tape ------------------------------ */
+
+.exhibitCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  padding: 22px 30px 26px;
+  background: var(--grain), #fbfaf4;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.35s ease;
+}
+
+/* A rubber stamp: red ink, worn where the rubber missed. */
+.stamp {
+  display: inline-block;
+  margin: 0 0 9px -3px;
+  padding: 4px 10px 3px;
+  border: 2.5px solid currentColor;
+  border-radius: 3px;
+  color: var(--stamp);
+  font: 600 19px/1 var(--font-tape);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  transform: rotate(-3.5deg);
+  -webkit-mask: var(--wear) 0 0 / 150px 150px;
+  mask: var(--wear) 0 0 / 150px 150px;
+}
+
+.position {
+  width: 100%;
+  margin: 0;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--rule-red);
+  font: 700 22px/28px var(--font-typed);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.company {
+  margin: 0 0 4px;
+  font: 400 28px/36px var(--font-marker);
+  color: var(--marker);
+}
+
+.dates {
+  margin: 0;
+  font: 400 18px/26px var(--font-typed);
+  color: var(--ink-soft);
+}
+
+.fileLink {
+  margin-top: 14px;
+  font: 700 18px/26px var(--font-typed);
+  color: var(--marker-blue);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
+}
+
+.fileLink:hover {
+  color: var(--stamp);
+}
+
+.print {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 12px 12px 30px;
+  background: linear-gradient(165deg, #ffffff 0%, #efede7 100%);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.35s ease;
+}
+
+/* A flash photograph of the employer's sign: shot slightly off-axis, lit from the
+   upper left, with grain, falloff to the corners and the camera's date imprint. */
+.printWindow {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: radial-gradient(110% 90% at 32% 22%, #f4f0e6 0%, #dbd3c4 56%, #b4ab99 100%);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
+}
+
+.printWindow::before,
+.printWindow::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+}
+
+.printWindow::before {
+  background: var(--grain), var(--grain);
+  background-position: 0 0, 37px 61px;
+  mix-blend-mode: multiply;
+}
+
+.printWindow::after {
+  background:
+    linear-gradient(122deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 34%),
+    radial-gradient(ellipse 80% 80% at 44% 42%, rgba(34, 20, 6, 0) 58%, rgba(34, 20, 6, 0.3) 100%);
+}
+
+.printLogo {
+  width: 64%;
+  height: 64%;
+  object-fit: contain;
+  filter: saturate(0.92) contrast(1.08) sepia(0.06) drop-shadow(3px 5px 3px rgba(40, 26, 10, 0.3));
+  transform: perspective(520px) rotateY(-10deg) rotateX(5deg) rotate(-1.5deg);
+}
+
+.dateStamp {
+  position: absolute;
+  z-index: 2;
+  right: 7%;
+  bottom: 6%;
+  font: 700 16px/1 var(--font-typed);
+  letter-spacing: 0.1em;
+  color: #f2711c;
+  text-shadow: 0 0 1px #ffc58a, 0 0 6px rgba(255, 106, 16, 0.6);
+}
+
+/* A figure circled in red marker: the loop doesn't quite close, as a hand draws it. */
+.circled {
+  position: relative;
+  background: none;
+  color: inherit;
+  white-space: nowrap;
+}
+
+.circled::after {
+  content: '';
+  position: absolute;
+  left: -0.55em;
+  right: -0.5em;
+  top: -0.45em;
+  bottom: -0.4em;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 50' preserveAspectRatio='none'%3E%3Cpath d='M16 31C9 18 37 5 64 7c24 2 36 14 26 28-10 12-50 14-70 6C8 36 8 26 27 15' fill='none' stroke='%23c4202d' stroke-width='2.4' stroke-linecap='round' vector-effect='non-scaling-stroke' opacity='0.86'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+
+.printMark {
+  position: absolute;
+  right: 14px;
+  bottom: 5px;
+  font: 400 24px/1 var(--font-marker);
+  color: var(--marker-blue);
+  transform: rotate(-6deg);
+}
+
+/* A carbon on onionskin: thin enough that the cork shows through. */
+.onion {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 36px 36px 40px;
+  background: var(--grain), linear-gradient(180deg, rgba(247, 247, 239, 0.93) 0%, rgba(237, 238, 229, 0.93) 100%);
+  box-shadow: 0 1px 1px rgba(25, 14, 4, 0.16), 0 9px 16px -6px rgba(30, 16, 4, 0.38);
+  font: 400 19px/28px var(--font-typed);
+  color: var(--ink);
+  text-shadow: 0 0 0.7px rgba(31, 28, 25, 0.45);
+}
+
+.onion::before {
+  content: '';
+  position: absolute;
+  top: -11px;
+  left: 26px;
+  width: 92px;
+  height: 26px;
+  background: rgba(233, 222, 186, 0.78);
+  box-shadow: 0 1px 1px rgba(40, 22, 6, 0.12);
+  transform: rotate(-5deg);
+}
+
+.onion p {
+  margin: 0;
+}
+
+.item[data-lit] .onion {
+  box-shadow: 0 2px 2px rgba(25, 14, 4, 0.16), 0 16px 24px -8px rgba(30, 16, 4, 0.45);
+}
+
+/* Label-maker tape: embossed white letters on black, a pin through the left end. */
+.tape {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 100%;
+  padding: 0 20px 0 40px;
+  border-radius: 1px;
+  background: linear-gradient(180deg, #2f2f2f 0%, #161616 20%, #0e0e0e 80%, #050505 100%);
+  box-shadow: 0 2px 3px rgba(20, 10, 2, 0.45), 0 8px 12px -6px rgba(20, 10, 2, 0.4);
+  color: #efefe8;
+  text-decoration: none;
+}
+
+.tapeLogo {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f5f3ec;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+.tapeLogo img {
+  width: 21px;
+  height: 21px;
+  object-fit: contain;
+}
+
+.tapeText {
+  min-width: 0;
+  overflow: hidden;
+  font: 600 20px/1 var(--font-tape);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.18), 0 -1px 0 rgba(0, 0, 0, 0.9);
+}
+
+.tape:hover .tapeText,
+.item[data-lit='on'] .tapeText {
+  color: #ffd98f;
+}
+
+/* --- Contact: a yellow legal pad --------------------------------------------------- */
+
+.pad {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--grain), linear-gradient(180deg, #f8e783 0%, #f4df73 100%);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.35s ease;
+}
+
+.padBinding {
+  position: relative;
+  flex: none;
+  height: 52px;
+  background: linear-gradient(180deg, #7e272d 0%, #631b21 70%, #4e141a 100%);
+  box-shadow: 0 3px 4px rgba(60, 10, 10, 0.32);
+}
+
+.padBinding::before,
+.padBinding::after {
+  content: '';
+  position: absolute;
+  top: 22px;
+  width: 34px;
+  height: 5px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #f2f2f2 0%, #a3a3a3 100%);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+.padBinding::before {
+  left: 24%;
+}
+
+.padBinding::after {
+  right: 24%;
+}
+
+.padSheet {
+  position: relative;
+  flex: 1;
+  padding: 26px 44px 30px 104px;
+  /* Blue rules every 34px under the heading. */
+  background: repeating-linear-gradient(180deg, transparent 0 33px, var(--rule-blue) 33px 34px) 0 74px / 100% calc(100% - 74px) no-repeat;
+}
+
+/* The double red margin. */
+.padSheet::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 74px;
+  width: 4px;
+  border-left: 1.5px solid rgba(214, 84, 92, 0.72);
+  border-right: 1.5px solid rgba(214, 84, 92, 0.72);
+}
+
+.padTitle {
+  margin: 0 0 16px;
+  font: 400 40px/1.1 var(--font-marker);
+  color: var(--marker-blue);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 28px;
+}
+
+.field {
+  position: relative;
+  padding-top: 22px;
+}
+
+.fieldWide {
+  grid-column: 1 / -1;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  padding: 6px 2px;
+  border: 0;
+  border-bottom: 2px solid rgba(31, 28, 25, 0.55);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 400 21px/1.4 var(--font-typed);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+}
+
+.input:focus-visible {
+  outline: none;
+  border-bottom-color: var(--ring);
+  box-shadow: 0 2px 0 var(--ring);
+}
+
+.textarea {
+  min-height: 150px;
+  resize: vertical;
+  line-height: 34px;
+}
+
+/* Labels sit on an empty line and lift clear once there's writing on it. */
+.label {
+  position: absolute;
+  left: 2px;
+  top: 0;
+  font: 700 13px/1 var(--font-typed);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(31, 28, 25, 0.72);
+  pointer-events: none;
+  transition: top 0.2s ease, font-size 0.2s ease, letter-spacing 0.2s ease;
+}
+
+.input:placeholder-shown:not(:focus) + .label {
+  top: 33px;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.submit {
+  appearance: none;
+  padding: 11px 22px 9px;
+  border: 3px solid currentColor;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--stamp);
+  font: 600 21px/1 var(--font-tape);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transform: rotate(-2deg);
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.submit:hover {
+  background: rgba(192, 53, 44, 0.09);
+}
+
+.submit:active {
+  transform: rotate(-2deg) translateY(1px) scale(0.98);
+}
+
+.submit:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+/* --- Confirming and the result --------------------------------------------------- */
+
+.dialog {
+  width: min(460px, calc(100vw - 32px));
+  max-width: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+}
+
+.dialog::backdrop {
+  background: rgba(12, 9, 6, 0.66);
+}
+
+.panel {
+  position: relative;
+  padding: 30px 28px 26px;
+  background: var(--grain), #fbfaf4;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  transform: rotate(-0.8deg);
+}
+
+.close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.close:hover {
+  background: rgba(31, 28, 25, 0.07);
+}
+
+.dialogTitle {
+  margin: 14px 0 22px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--rule-red);
+  font: 700 21px/1.4 var(--font-typed);
+  color: var(--ink);
+}
+
+.dialogActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 22px;
+}
+
+.cancel {
+  appearance: none;
+  padding: 8px 4px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 700 17px/1.2 var(--font-typed);
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  cursor: pointer;
+}
+
+.statusRegion {
+  position: fixed;
+  z-index: 60;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%);
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: max-content;
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 14px 14px 14px 18px;
+  background: var(--grain), #fbfaf4;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.45);
+  color: var(--ink);
+  font: 400 16px/1.4 var(--font-typed);
+  transform: rotate(-0.6deg);
+}
+
+/* The slip is pinned: green when the message went, red when it didn't. */
+.toast::before {
+  content: '';
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 30%, var(--pin-light) 0%, var(--pin-mid) 48%, var(--pin-dark) 100%);
+  box-shadow: 3px 4px 4px rgba(28, 14, 2, 0.3);
+}
+
+.success {
+  --pin-light: #9be8c0;
+  --pin-mid: #1f9a6a;
+  --pin-dark: #0b4a33;
+}
+
+.failure {
+  --pin-light: #ff8a86;
+  --pin-mid: #d1232f;
+  --pin-dark: #6e0912;
+}
+
+.statusMessage {
+  flex: 1;
+}
+
+.dismiss {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+/* --- In front of the lens: vignette, dust and flash, the cue ---------------------------- */
+
+.vignette,
+.cue {
+  display: none;
+}
+
+.root[data-mode='camera'] .vignette {
+  display: block;
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  /* Darker along the bottom, under the shot bar, so what hangs beneath it stays quiet. */
+  background:
+    linear-gradient(0deg, rgba(10, 7, 4, 0.66) 0, rgba(10, 7, 4, 0.3) 70px, rgba(10, 7, 4, 0) 128px),
+    radial-gradient(ellipse 78% 74% at 50% 50%, rgba(8, 5, 2, 0) 56%, rgba(8, 5, 2, 0.46) 100%);
+  pointer-events: none;
+}
+
+@media (min-width: 1180px) and (min-height: 600px) and (min-aspect-ratio: 1/1) {
+  .root[data-mode='camera'] .vignette {
+    background: radial-gradient(ellipse 78% 74% at 50% 50%, rgba(8, 5, 2, 0) 56%, rgba(8, 5, 2, 0.46) 100%);
+  }
+}
+
+.atmosphere {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.root[data-mode='camera'] .cue {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  bottom: 8px;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 12px 7px 15px;
+  background: var(--grain), #f4efe3;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45);
+  color: var(--ink);
+  font: 700 14px/1 var(--font-typed);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  transform: translateX(-50%) rotate(-1.2deg);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Where the shot bar is shown, the bar carries the cue instead. */
+@media (min-width: 1180px) and (min-height: 600px) and (min-aspect-ratio: 1/1) {
+  .root[data-mode='camera'] .cue {
+    display: flex;
+  }
+}
+
+.cue svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: cue-nudge 1.8s ease-in-out infinite;
+}
+
+@keyframes cue-nudge {
+  50% {
+    transform: translateY(3px);
+  }
+}
+
+.root[data-camera-started] .cue {
+  opacity: 0;
+  transform: translateX(-50%) translateY(12px) rotate(-1.2deg);
+}
+
+/* --- The shots: a strip of film on wide screens, one bar elsewhere ------------------------ */
+
+.film {
+  display: none;
+}
+
+.bar {
+  position: fixed;
+  z-index: 30;
+  left: 50%;
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: min(520px, calc(100vw - 20px));
+  padding: 5px;
+  border-radius: 4px;
+  background: #15100b;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(240, 167, 58, 0.16);
+  transform: translateX(-50%);
+}
+
+.barStep {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(240, 167, 58, 0.3);
+  border-radius: 3px;
+  background: rgba(255, 240, 220, 0.04);
+  color: var(--amber);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.barStep:hover:not(:disabled) {
+  border-color: var(--amber);
+  background: rgba(240, 167, 58, 0.12);
+}
+
+.barStep:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.barStep svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.barReadout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  margin: 0;
+  text-align: center;
+}
+
+.barCount {
+  font: 600 11px/1 var(--font-tape);
+  letter-spacing: 0.24em;
+  color: var(--amber);
+}
+
+.barLabel {
+  font: 600 16px/1.1 var(--font-tape);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--chrome-text);
+}
+
+.barDetail {
+  max-width: 100%;
+  overflow: hidden;
+  font: 400 12px/1.2 var(--font-typed);
+  color: var(--chrome-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bar :focus-visible,
+.film :focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 2px;
+}
+
+@media (min-width: 1180px) and (min-height: 600px) and (min-aspect-ratio: 1/1) {
+  .bar {
+    display: none;
+  }
+
+  .film {
+    position: fixed;
+    z-index: 30;
+    left: 22px;
+    top: 50%;
+    display: block;
+    width: 204px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    padding: 14px 24px 16px;
+    border-radius: 3px;
+    background: #15100b;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    transform: translateY(-50%);
+    scrollbar-width: none;
+  }
+}
+
+/* Sprocket holes down both edges. */
+.film::before,
+.film::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  background: repeating-linear-gradient(180deg, transparent 0 7px, rgba(232, 220, 200, 0.78) 7px 15px, transparent 15px 22px);
+}
+
+.film::before {
+  left: 8px;
+}
+
+.film::after {
+  right: 8px;
+}
+
+.filmEdge {
+  margin: 0 0 10px;
+  font: 600 11px/1 var(--font-tape);
+  letter-spacing: 0.3em;
+  color: var(--amber);
+}
+
+.frames {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.frames li {
+  min-width: 0;
+}
+
+.frame {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 1px solid rgba(240, 167, 58, 0.18);
+  border-radius: 2px;
+  background: rgba(255, 240, 220, 0.03);
+  color: rgba(239, 229, 212, 0.72);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+.frame:hover {
+  border-color: rgba(240, 167, 58, 0.5);
+  color: var(--chrome-text);
+}
+
+.frame[aria-current='step'] {
+  border-color: var(--amber);
+  background: rgba(240, 167, 58, 0.16);
+  color: #fff8ec;
+}
+
+.frameNumber {
+  flex: none;
+  padding-top: 2px;
+  font: 600 12px/1.2 var(--font-tape);
+  letter-spacing: 0.1em;
+  color: var(--amber);
+}
+
+.frameText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.frameLabel {
+  font: 600 15px/1.15 var(--font-tape);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.frameDetail {
+  font: 400 11.5px/1.3 var(--font-typed);
+  color: var(--chrome-muted);
+}
+
+/* --- The colophon ------------------------------------------------------------------------ */
+
+.colophon {
+  position: relative;
+  padding: 40px 24px calc(48px + env(safe-area-inset-bottom, 0px));
+  background: var(--wall);
+  color: var(--chrome-muted);
+  font: 400 15px/1.5 var(--font-typed);
+  text-align: center;
+}
+
+.colophon p {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 22px;
+  margin: 0;
+}
+
+.colophon strong {
+  color: var(--chrome-text);
+}
+
+.colophon a {
+  color: var(--amber);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.colophon :focus-visible {
+  outline-color: var(--amber);
+}
+
+.root[data-mode='camera'] .colophon {
+  padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+}
+
+@media (min-width: 1180px) and (min-height: 600px) and (min-aspect-ratio: 1/1) {
+  .root[data-mode='camera'] .colophon {
+    padding-bottom: 48px;
+  }
+}
+
+/* The section title is for screen readers on the board; flow mode shows it. */
+.exhibitsTitle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* --- The portrait board's paper is a little larger (see SPECS.p in layout.js) -------------- */
+
+@media not all and (min-width: 900px) and (min-height: 600px) and (min-aspect-ratio: 1/1) {
+  .sheet {
+    padding: 30px 32px 36px;
+    line-height: 31px;
+  }
+
+  .exhibitCard {
+    padding: 22px 28px 26px;
+  }
+
+  .position {
+    line-height: 29px;
+  }
+
+  .company {
+    font-size: 30px;
+    line-height: 38px;
+  }
+
+  .dates {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .fileLink {
+    line-height: 28px;
+  }
+
+  .onion {
+    padding: 32px 30px 34px;
+    font-size: 20px;
+    line-height: 30px;
+  }
+
+  .tapeText {
+    font-size: 21px;
+  }
+
+  .tapeLogo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .padSheet {
+    padding: 22px 24px 26px 66px;
+    background-position: 0 64px;
+    background-size: 100% calc(100% - 64px);
+  }
+
+  .padSheet::before {
+    left: 44px;
+  }
+
+  .padTitle {
+    font-size: 34px;
+  }
+
+  .fields {
+    grid-template-columns: 1fr;
+  }
+
+  .padBinding {
+    height: 46px;
+  }
+
+  .padBinding::before,
+  .padBinding::after {
+    top: 19px;
+  }
+}
+
+/* --- Flow mode: the same paper, laid out to read ------------------------------------------- */
+
+.root[data-mode='flow'] .viewport {
+  padding: 48px 0 56px;
+  background: radial-gradient(ellipse 90% 60% at 50% 20%, #2c251e 0%, #1d1a17 60%, #15120f 100%);
+}
+
+.root[data-mode='flow'] .rig {
+  position: relative;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 60px 52px 72px;
+  border-radius: 3px;
+  background: var(--cork) 0 0 / 512px 512px repeat, #a87c4f;
+  box-shadow:
+    0 0 0 12px #8e9195,
+    0 0 0 14px #5e6164,
+    0 0 0 15px rgba(255, 255, 255, 0.12),
+    0 40px 80px rgba(0, 0, 0, 0.55);
+}
+
+.root[data-mode='flow'] .item {
+  transform: rotate(calc(var(--lr) * 0.6));
+}
+
+/* A pin through the top of each sheet. */
+.root[data-mode='flow'] .item:not(.techItem):not(.descItem)::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 5px;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin-left: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 30%, var(--pin-light, #ff8a86) 0%, var(--pin-mid, #d1232f) 48%, var(--pin-dark, #6e0912) 100%);
+  box-shadow: 4px 6px 5px rgba(28, 14, 2, 0.32);
+}
+
+.profileItem,
+.linkItem {
+  --pin-light: #9cc0ff;
+  --pin-mid: #2e62c4;
+  --pin-dark: #122b63;
+}
+
+.resumeItem,
+.padItem {
+  --pin-light: #9be8c0;
+  --pin-mid: #1f9a6a;
+  --pin-dark: #0b4a33;
+}
+
+.printItem {
+  --pin-light: #ffffff;
+  --pin-mid: #e4e2db;
+  --pin-dark: #86847c;
+}
+
+.root[data-mode='flow'] .intro {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 44px 36px;
+  align-items: start;
+}
+
+.root[data-mode='flow'] .subjectItem {
+  grid-column: 1 / span 5;
+  justify-self: center;
+  width: min(100%, 380px);
+  aspect-ratio: 380 / 500;
+}
+
+.root[data-mode='flow'] .profileItem {
+  grid-column: 6 / span 7;
+  margin-top: 20px;
+}
+
+.root[data-mode='flow'] .resumeItem {
+  grid-column: 1 / span 4;
+  aspect-ratio: 330 / 228;
+}
+
+.root[data-mode='flow'] .linkItem {
+  grid-column: span 4;
+  align-self: center;
+  height: 132px;
+}
+
+.root[data-mode='flow'] .experience {
+  display: grid;
+  gap: 60px;
+  margin-top: 80px;
+}
+
+.root[data-mode='flow'] .exhibitsTitle {
+  position: static;
+  justify-self: start;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip: auto;
+  margin: 0;
+  padding: 12px 22px 10px;
+  background: linear-gradient(180deg, #2e2e2e 0%, #131313 28%, #0b0b0b 100%);
+  box-shadow: 0 4px 8px rgba(20, 10, 2, 0.45);
+  color: #ecebe4;
+  font: 600 34px/1 var(--font-tape);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.16), 0 -1px 0 rgba(0, 0, 0, 0.9);
+  white-space: normal;
+  transform: rotate(-1.5deg);
+}
+
+.root[data-mode='flow'] .exhibit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 28px 32px;
+}
+
+.root[data-mode='flow'] .roleItem {
+  flex: 0 1 420px;
+}
+
+.root[data-mode='flow'] .printItem {
+  flex: 0 0 200px;
+  height: auto;
+}
+
+.root[data-mode='flow'] .descItem {
+  flex: 1 1 420px;
+}
+
+.root[data-mode='flow'] .techItem {
+  flex: 0 1 auto;
+  max-width: 100%;
+  height: 50px;
+}
+
+.root[data-mode='flow'] .tape {
+  width: auto;
+}
+
+.root[data-mode='flow'] .contactSection {
+  display: flex;
+  justify-content: center;
+  margin-top: 84px;
+}
+
+.root[data-mode='flow'] .padItem {
+  width: min(100%, 760px);
+}
+
+@media (max-width: 899px) {
+  .root[data-mode='flow'] .rig {
+    margin: 0 12px;
+    padding: 40px 18px 48px;
+    box-shadow:
+      0 0 0 7px #8e9195,
+      0 0 0 8px #5e6164,
+      0 24px 50px rgba(0, 0, 0, 0.5);
+  }
+
+  .root[data-mode='flow'] .viewport {
+    padding: 28px 0 40px;
+  }
+
+  .root[data-mode='flow'] .intro {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+
+  .root[data-mode='flow'] .subjectItem,
+  .root[data-mode='flow'] .profileItem,
+  .root[data-mode='flow'] .resumeItem,
+  .root[data-mode='flow'] .linkItem {
+    grid-column: auto;
+    justify-self: center;
+    margin-top: 0;
+  }
+
+  .root[data-mode='flow'] .subjectItem {
+    width: min(100%, 340px);
+  }
+
+  .root[data-mode='flow'] .resumeItem {
+    width: min(100%, 330px);
+  }
+
+  .root[data-mode='flow'] .linkItem {
+    width: min(100%, 300px);
+  }
+
+  .root[data-mode='flow'] .printItem {
+    flex-basis: 170px;
+  }
+
+  .root[data-mode='flow'] .exhibitsTitle {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 480px) {
+  .root[data-mode='flow'] .tapeText {
+    font-size: 16px;
+    letter-spacing: 0.08em;
+  }
+
+  .root[data-mode='flow'] .sheet {
+    padding: 26px 22px 30px;
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  .root[data-mode='flow'] .onion {
+    padding: 28px 22px 30px;
+    font-size: 18px;
+    line-height: 28px;
+  }
+}
+
+/* --- A case file (the case study pages) ------------------------------------------------- */
+
+.caseRoot {
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255, 196, 130, 0.12) 0%, rgba(255, 196, 130, 0) 70%),
+    linear-gradient(180deg, #221d18 0%, #1a1714 100%);
+}
+
+.caseMain {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 72px;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 9px 10px;
+  background: linear-gradient(180deg, #2e2e2e 0%, #131313 28%, #0b0b0b 100%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.45);
+  color: #ecebe4;
+  font: 600 16px/1 var(--font-tape);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.16), 0 -1px 0 rgba(0, 0, 0, 0.9);
+  transform: rotate(-1.2deg);
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.backLink:hover {
+  transform: translateX(-3px) rotate(-1.2deg);
+}
+
+.backLink svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.backLink:focus-visible,
+.fileTab:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 3px;
+}
+
+/* A manila folder with its tab. */
+.folder {
+  position: relative;
+  margin-top: 68px;
+  padding: 30px;
+  border-radius: 3px 6px 6px 6px;
+  background: var(--grain), linear-gradient(176deg, #e9d29c 0%, #dcc183 100%);
+  box-shadow: inset 0 0 0 1px rgba(120, 88, 30, 0.25), 0 34px 70px rgba(0, 0, 0, 0.55);
+}
+
+.folderTab {
+  position: absolute;
+  left: 0;
+  bottom: 100%;
+  display: flex;
+  align-items: center;
+  height: 38px;
+  margin: 0;
+  padding: 0 24px;
+  border-radius: 8px 10px 0 0;
+  background: var(--grain), #e9d29c;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  color: var(--ink);
+  font: 600 15px/1 var(--font-tape);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.folderInner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 30px;
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .folderInner {
+    grid-template-columns: 320px minmax(0, 1fr);
+    gap: 36px;
+  }
+
+  .caseSide {
+    position: sticky;
+    top: 84px;
+  }
+}
+
+.caseSide {
+  display: grid;
+  gap: 26px;
+  justify-items: center;
+}
+
+.caseCard {
+  position: relative;
+  width: 100%;
+  padding: 28px 26px 24px;
+  background: var(--grain), #fbfaf4;
+  box-shadow: var(--lift);
+  transform: rotate(-1deg);
+}
+
+/* A paperclip over the card's top edge. */
+.clip {
+  position: absolute;
+  top: -16px;
+  right: 34px;
+  width: 18px;
+  height: 56px;
+  border: 2.5px solid #a3a8ad;
+  border-radius: 9px;
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, 0.18);
+}
+
+.clip::after {
+  content: '';
+  position: absolute;
+  top: 9px;
+  left: 3px;
+  width: 7px;
+  height: 34px;
+  border: 2.5px solid #a3a8ad;
+  border-bottom: 0;
+  border-radius: 5px 5px 0 0;
+}
+
+.caseTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+}
+
+.caseTitle .position {
+  line-height: 1.3;
+}
+
+.caseTitle .company {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.15;
+}
+
+.caseCard .dates {
+  margin-top: 8px;
+}
+
+.caseCount {
+  margin: 14px 0 0;
+  font: 600 13px/1 var(--font-tape);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.casePrint {
+  width: min(100%, 232px);
+  height: auto;
+  aspect-ratio: 232 / 252;
+  transform: rotate(2.2deg);
+}
+
+.caseTapes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.caseTapes li {
+  height: 44px;
+  max-width: 100%;
+}
+
+.caseTapes li:nth-child(odd) {
+  transform: rotate(-1.4deg);
+}
+
+.caseTapes li:nth-child(even) {
+  transform: rotate(1.2deg);
+}
+
+.caseTapes .tape {
+  width: auto;
+  padding: 0 16px 0 7px;
+}
+
+.caseTapes .tapeText {
+  font-size: 17px;
+}
+
+/* The report, typed on the folder's sheets. */
+.report {
+  position: relative;
+  padding: clamp(28px, 4.5vw, 60px) clamp(22px, 4.5vw, 64px);
+  background: var(--grain), linear-gradient(180deg, #f8f4ea 0%, #f0eadc 100%);
+  box-shadow: var(--lift);
+}
+
+.report::before,
+.report::after {
+  content: '';
+  position: absolute;
+  top: -12px;
+  width: 96px;
+  height: 28px;
+  background: rgba(233, 222, 186, 0.8);
+  box-shadow: 0 1px 1px rgba(40, 22, 6, 0.12);
+}
+
+.report::before {
+  left: 30px;
+  transform: rotate(-4deg);
+}
+
+.report::after {
+  right: 30px;
+  transform: rotate(5deg);
+}
+
+.reportBody {
+  max-width: 68ch;
+  color: var(--ink);
+  font: 400 18px/1.75 var(--font-typed);
+  overflow-wrap: anywhere;
+  text-shadow: 0 0 0.7px rgba(31, 28, 25, 0.4);
+}
+
+.reportBody > :first-child {
+  margin-top: 0;
+}
+
+.reportBody p {
+  margin: 0 0 1.15em;
+}
+
+.reportBody h1,
+.reportBody h2,
+.reportBody h3,
+.reportBody h4 {
+  margin: 2.1em 0 0.85em;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--rule-red);
+  font: 700 19px/1.35 var(--font-typed);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.reportBody h1,
+.reportBody h2 {
+  font-size: 21px;
+}
+
+.reportBody h4 {
+  border-bottom: 0;
+  font-size: 17px;
+}
+
+.reportBody a {
+  color: var(--marker-blue);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+
+.reportBody a:hover {
+  color: var(--stamp);
+}
+
+.reportBody ul,
+.reportBody ol {
+  margin: 0 0 1.15em;
+  padding-left: 1.5em;
+}
+
+.reportBody li {
+  margin: 0.35em 0;
+}
+
+.reportBody img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.8em auto;
+  padding: 10px 10px 30px;
+  background: #fdfcf8;
+  box-shadow: var(--lift);
+  transform: rotate(-0.6deg);
+}
+
+.reportBody blockquote {
+  margin: 1.4em 0;
+  padding: 0 1.5em;
+  font: 400 22px/1.45 var(--font-marker);
+  color: var(--marker-blue);
+}
+
+.reportBody code {
+  padding: 0 0.3em;
+  background: rgba(31, 28, 25, 0.07);
+  font-family: var(--font-typed);
+}
+
+.reportBody hr {
+  height: 2px;
+  margin: 2em 0;
+  border: 0;
+  background: var(--rule-red);
+}
+
+/* The neighbouring files, as folder tabs. */
+.fileTabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  margin-top: 44px;
+}
+
+.fileTab {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 22px 20px;
+  border-radius: 8px 8px 3px 3px;
+  background: var(--grain), linear-gradient(176deg, #e9d29c 0%, #dcc183 100%);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45);
+  color: var(--ink);
+  text-decoration: none;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+}
+
+.fileTab:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 36px rgba(0, 0, 0, 0.5);
+}
+
+.fileTab[data-direction='next'] {
+  grid-column: 2;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.fileTabKicker {
+  font: 600 13px/1 var(--font-tape);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.fileTabTitle {
+  font: 700 18px/1.3 var(--font-typed);
+  text-transform: uppercase;
+}
+
+.fileTabCompany {
+  font: 400 22px/1.2 var(--font-marker);
+  color: var(--marker);
+}
+
+@media (max-width: 640px) {
+  .caseMain {
+    padding: 24px 12px 48px;
+  }
+
+  .folder {
+    margin-top: 60px;
+    padding: 14px;
+  }
+
+  .folderTab {
+    padding: 0 16px;
+    font-size: 13px;
+  }
+
+  .reportBody {
+    font-size: 16.5px;
+  }
+
+  .fileTabs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fileTab[data-direction='next'] {
+    grid-column: auto;
+  }
+}
