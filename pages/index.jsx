@@ -50,7 +50,8 @@ const getStaticProps = async () => ({
   props: {
     experiences: await Promise.all(experienceList.map(async (experience) => {
       const id = experience.report.replace(/^\//, '');
-      const { dateRange = null } = await getData(id);
+      // A role whose case study isn't written yet shows without dates.
+      const { dateRange = null } = await getData(id).catch(() => ({}));
       return { ...experience, id, dateRange };
     })),
   },

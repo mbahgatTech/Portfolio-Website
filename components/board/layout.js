@@ -200,7 +200,7 @@ const SPECS = {
     desc: { w: 500, padX: 36, padTop: 36, size: 19, line: 28, padBottom: 40 },
     tech: { h: 50, size: 20, track: 0.12, pin: 40, logo: 32, gap: 10, padR: 20 },
     contact: { w: 760, h: 600 },
-    ring: { rx: 1690, ry: 880 },
+    ring: { rx: 1690, ry: 880, slots: 6 },
     cluster: { gap: 34, descDrop: 26, logoInset: 70 },
     techPull: 0.56,
     techPullShared: 0.8,
@@ -297,13 +297,15 @@ function layoutLandscape(S, parts) {
   });
 
   // Exhibits and the contact pad around an ellipse, in kin order, clockwise
-  // from the upper left; the contact pad closes the ring.
+  // from the upper left; the contact pad closes the ring. The ring is sized for
+  // S.ring.slots places and grows with more, so each keeps the same room.
   const C = S.cluster;
   const slots = chain.length + 1;
   const step = 360 / slots;
+  const grow = Math.max(1, slots / S.ring.slots);
   const centreOf = (index) => {
     const angle = ((-90 - step + index * step) * Math.PI) / 180;
-    return { x: S.ring.rx * Math.cos(angle), y: S.ring.ry * Math.sin(angle) };
+    return { x: S.ring.rx * grow * Math.cos(angle), y: S.ring.ry * grow * Math.sin(angle) };
   };
   const clusterCentres = {};
   chain.forEach((item, index) => {
