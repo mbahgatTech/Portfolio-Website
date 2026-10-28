@@ -1,12 +1,22 @@
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer';
+import { withObservability } from '../../utils/server/observability';
+
+const isFilled = (value) => typeof value === 'string' && value.trim() !== '';
 
 /**
  * Api endpoint that attempts sending an email to a target account. It takes 
  * in the name, email and message of the user (sender) and creates an email that
- * is sent using nodemailer.
+ * is sent using nodemailer. Only a POST with all three fields is accepted; send
+ * failures are logged and reported by withObservability.
  */
-const SendEmail = (req, res) => {
-    let { name, email, message } = req.body;
+const SendEmail = async (req) => {
+    if (req.method !== 'POST') {
+        return { status: 405, headers: { Allow: 'POST' }, body: 'Method Not Allowed' };
+    }
+    const { name, email, message } = req.body || {};
+    if (![name, email, message].every(isFilled)) {
+        return { status: 400, body: 'A name, email and message are required.' };
+    }
 
     // setup source email credentials
     let transporter = nodemailer.createTransport({
@@ -26,10 +36,12 @@ const SendEmail = (req, res) => {
     };
     
     // attempt sending the email
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) return res.status(500).send('We could not send your message, please try again later.');
-        return res.status(200).send('Your message has been sent.');
-    });
+    try {
+        await transporter.sendMail(mailOptions);
+    } catch (error) {
+        return { status: 500, body: 'We could not send your message, please try again later.', error };
+    }
+    return { status: 200, body: 'Your message has been sent.' };
 }
 
-export default SendEmail;
+export default withObservability('/api/message', SendEmail);

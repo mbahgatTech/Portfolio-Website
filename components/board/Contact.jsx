@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { track } from '../../utils/analytics';
 import { MessageSubmit } from '../../utils/Message';
 import { MODAL } from '../../utils/json/constants';
 import XMarkIcon from '../icons/x-mark.svg';
@@ -7,7 +8,8 @@ import styles from './Board.module.css';
 
 // The contact flow, on the legal pad: the form collects a message, a
 // confirmation dialog asks before sending, MessageSubmit (utils/Message.js) POSTs
-// it to /api/message, and a pinned slip reports the result.
+// it to /api/message, and a pinned slip reports the result. Each step is an
+// analytics event (never with what was typed), so drop-off shows as a funnel.
 
 const STATUS_TIMEOUT_MS = 5000;
 
@@ -27,6 +29,7 @@ export function useMessageFlow() {
     clearTimeout(timer.current);
     setStatus('sending');
     const sent = await MessageSubmit(data);
+    track(sent ? 'contact_message_sent' : 'contact_message_failed');
     setStatus(sent ? 'success' : 'failure');
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setStatus('idle'), STATUS_TIMEOUT_MS);
@@ -36,8 +39,14 @@ export function useMessageFlow() {
     draft,
     status,
     confirm,
-    request: setDraft,
-    cancel: useCallback(() => setDraft(null), []),
+    request: useCallback((data) => {
+      track('contact_form_submitted');
+      setDraft(data);
+    }, []),
+    cancel: useCallback(() => {
+      track('contact_message_cancelled');
+      setDraft(null);
+    }, []),
     dismiss: useCallback(() => {
       clearTimeout(timer.current);
       setStatus('idle');
@@ -51,11 +60,18 @@ export function useMessageFlow() {
  */
 export function ContactForm({ flow }) {
   const formRef = useRef(null);
+  const started = useRef(false);
   const sending = flow.status === 'sending';
 
   useEffect(() => {
     if (flow.status === 'success') formRef.current?.reset();
   }, [flow.status]);
+
+  const handleInput = () => {
+    if (started.current) return;
+    started.current = true;
+    track('contact_form_started');
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -68,7 +84,17 @@ export function ContactForm({ flow }) {
   };
 
   return (
-    <form ref={formRef} className={styles.form} onSubmit={handleSubmit} aria-busy={sending || undefined}>
+    // method/action only matter if the form is sent before hydration (no JS yet):
+    // the fields then go to the API in the request body, not into the page URL.
+    <form
+      ref={formRef}
+      className={styles.form}
+      method="post"
+      action="/api/message"
+      onSubmit={handleSubmit}
+      onInput={handleInput}
+      aria-busy={sending || undefined}
+    >
       <div className={styles.fields}>
         <div className={styles.field}>
           <input id="contact-name" name="name" type="text" required autoComplete="name" placeholder=" " className={styles.input} />
