@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
+import { track } from '../../utils/analytics';
 import { NAVIGATION, PROFILE, SEO } from '../../utils/json/constants';
 import styles from './Board.module.css';
 
@@ -80,7 +81,7 @@ export function ProfileSheet() {
 
 export function Envelope() {
   return (
-    <a href="/resume.pdf" download className={styles.envelope}>
+    <a href="/resume.pdf" download className={styles.envelope} onClick={() => track('resume_downloaded', { location: 'board' })}>
       <span className={styles.flap} aria-hidden="true" />
       <span className={styles.envLabel}>
         <span className={styles.envKicker} aria-hidden="true">PDF</span>
@@ -93,7 +94,13 @@ export function Envelope() {
 export function LinkCard({ link }) {
   const where = link.href.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
   return (
-    <a href={link.href} target="_blank" rel="noreferrer" className={styles.linkCard}>
+    <a
+      href={link.href}
+      target="_blank"
+      rel="noreferrer"
+      className={styles.linkCard}
+      onClick={() => track('profile_link_clicked', { network: link.name, location: 'board' })}
+    >
       <span className={styles.linkName}>{link.name}</span>
       <span className={styles.linkWhere}>{where}</span>
       <span className="sr-only"> (opens in a new tab)</span>
@@ -108,7 +115,11 @@ export function ExhibitCard({ item }) {
       <h3 id={`board-role-${item.id}`} className={styles.position}>{item.position}</h3>
       <p className={styles.company}>{item.company}</p>
       {item.dateRange && <p className={styles.dates}>{item.dateRange}</p>}
-      <Link href={item.report} className={styles.fileLink}>
+      <Link
+        href={item.report}
+        className={styles.fileLink}
+        onClick={() => track('case_file_opened', { case_id: item.id, company: item.company, position: item.position, source: 'board' })}
+      >
         Open the case file<span className="sr-only"> for {item.position} at {item.company}</span>
         <span aria-hidden="true"> &rarr;</span>
       </Link>
@@ -229,7 +240,13 @@ export function Colophon() {
       <p>
         <strong>{PROFILE.MAZEN_BAHGAT}</strong>
         {NAVIGATION.map((link) => (
-          <a key={link.href} href={link.href} target="_blank" rel="noreferrer">
+          <a
+            key={link.href}
+            href={link.href}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => track('profile_link_clicked', { network: link.name, location: 'footer' })}
+          >
             {link.name}
             <span className="sr-only"> (opens in a new tab)</span>
           </a>

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRef } from 'react';
+import { track } from '../../utils/analytics';
 import experienceList from '../../utils/json/experience.json';
 import { kinChain, letterOf } from './layout';
 import { useTextures } from './textures';
@@ -15,8 +16,14 @@ const CHAIN = kinChain(experienceList);
 const LETTERS = Object.fromEntries(CHAIN.map((item, index) => [item.report, letterOf(index)]));
 
 function FileTab({ item, direction }) {
+  const opened = () => track('case_file_opened', {
+    case_id: item.report.replace(/^\//, ''),
+    company: item.company,
+    position: item.position,
+    source: `${direction}_tab`,
+  });
   return (
-    <Link href={item.report} className={styles.fileTab} data-direction={direction}>
+    <Link href={item.report} className={styles.fileTab} data-direction={direction} onClick={opened}>
       <span className={styles.fileTabKicker}>
         {direction === 'previous' ? 'Previous file' : 'Next file'}
         {LETTERS[item.report] && <> &middot; Exhibit {LETTERS[item.report]}</>}

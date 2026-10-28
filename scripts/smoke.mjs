@@ -70,6 +70,14 @@ async function get(path) {
   return { res, body };
 }
 
+function parseJson(text) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
 async function main() {
   console.log(`Smoke testing ${BASE}\n`);
 
@@ -92,6 +100,8 @@ async function main() {
     check(`/ links experience "${link}"`, home.body.includes(`href="${link}"`));
   }
   check('/ contains résumé download link', home.body.includes('href="/resume.pdf"'));
+  // Without JS (before hydration) the contact form must POST, keeping its fields out of the URL.
+  check('/ contact form falls back to POST /api/message', /<form[^>]*method="post"[^>]*action="\/api\/message"/.test(home.body));
   for (const url of SOCIAL_URLS) {
     check(`/ contains social URL ${url}`, home.body.includes(url));
   }
@@ -145,6 +155,26 @@ async function main() {
     '/resume.pdf is application/pdf',
     (pdf.res.headers.get('content-type') || '').includes('application/pdf')
   );
+
+  // --- Trailing slashes still redirect (the analytics relay turns off Next's own redirect). ---
+  console.log('GET /ncr/');
+  const slashed = await get('/ncr/');
+  check('/ncr/ redirects to /ncr', [301, 308].includes(slashed.res.status) && (slashed.res.headers.get('location') || '').endsWith('/ncr'));
+
+  // --- API routes: liveness, geolocation, and the contact endpoint's method guard. ---
+  console.log('GET /api/health');
+  const health = await get('/api/health');
+  check('/api/health returns 200', health.res.status === 200);
+  check('/api/health reports ok', parseJson(health.body)?.status === 'ok');
+
+  console.log('GET /api/geo');
+  const geo = await get('/api/geo');
+  check('/api/geo returns JSON with a country field', geo.res.status === 200 && 'country' in (parseJson(geo.body) || {}));
+
+  // Proves the contact function deploys and runs, without sending an email.
+  console.log('GET /api/message');
+  const message = await get('/api/message');
+  check('/api/message rejects GET with 405', message.res.status === 405);
 
   console.log('');
   if (failures.length) {

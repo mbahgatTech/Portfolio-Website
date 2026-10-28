@@ -1,0 +1,44 @@
+/* The error fallback, in Case Board's materials: a typed slip on the dark wall. */
+
+.wall {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 24px;
+  background: #1d1a17;
+}
+
+.slip {
+  max-width: 440px;
+  padding: 28px 30px;
+  background: #fbfaf4;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.45);
+  color: #1f1c19;
+  font-size: 16px;
+  line-height: 1.5;
+  transform: rotate(-0.6deg);
+}
+
+.title {
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.reload {
+  margin-top: 18px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #213a8a;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.reload:focus-visible {
+  outline: 3px solid #1f3d8a;
+  outline-offset: 3px;
+}
