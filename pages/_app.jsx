@@ -4,6 +4,7 @@ import { Sora } from 'next/font/google'
 import { MotionConfig } from 'framer-motion'
 import { ReactLenis } from 'lenis/react'
 import { useReduceMotion } from '../components/ui/motion'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 // Self-hosted display font (no layout shift), exposed as a CSS variable that
 // tailwind's fontFamily.display uses for headings.
@@ -37,6 +38,7 @@ const MyApp = ({ Component, pageProps }) => {
       <div className={displayFont.variable}>
         {smoothScroll && <ReactLenis root options={LENIS_OPTIONS} />}
         <Component {...pageProps} />
+        <SpeedInsights />
       </div>
     </MotionConfig>
   )
