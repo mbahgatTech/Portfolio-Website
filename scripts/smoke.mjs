@@ -77,6 +77,8 @@ async function main() {
   console.log('GET /');
   const home = await get('/');
   check('/ returns 200', home.res.status === 200);
+  check('/ profile highlights the full development lifecycle', home.body.includes('building secure, reliable enterprise software across the full development lifecycle.'));
+  check('/ profile includes the SDLC disciplines with comma-separated phrasing', home.body.includes('frontend and backend engineering, cloud infrastructure, CI/CD, security, observability, and enterprise governance, collaborating'));
   for (const company of COMPANIES) {
     check(`/ contains company "${company}"`, home.body.includes(company));
   }
@@ -98,8 +100,13 @@ async function main() {
   check('/ server HTML has no <canvas> (SSR-safe 3D)', !home.body.includes('<canvas'));
 
   // SEO metadata that search engines and link previews read from the server HTML.
+  const homeDescription = 'Mazen Bahgat is a software engineer with Microsoft and NCR experience, building secure, reliable enterprise software across the full development lifecycle.';
+  check('/ title uses Software Engineer only', home.body.includes('<title>Mazen Bahgat | Software Engineer</title>'));
   check('/ declares <html lang="en">', home.body.includes('<html lang="en"'));
   check('/ has a meta description', META_DESCRIPTION.test(home.body));
+  check('/ has a concise software engineer description', homeDescription.length <= 160 && home.body.includes(`<meta name="description" content="${homeDescription}"`));
+  check('/ Open Graph description matches the search description', home.body.includes(`<meta property="og:description" content="${homeDescription}"`));
+  check('/ Twitter description matches the search description', home.body.includes(`<meta name="twitter:description" content="${homeDescription}"`));
   check('/ has its canonical URL', home.body.includes(`<link rel="canonical" href="${SITE_URL}/"`));
   check('/ has Open Graph tags', home.body.includes('property="og:title"') && home.body.includes('property="og:image"'));
   check('/ has JSON-LD structured data', home.body.includes('application/ld+json'));
